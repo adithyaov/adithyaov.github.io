@@ -11,7 +11,7 @@ I use Vim for most of my tasks, my work environment is basically Vim + Tmux.
 I prefer the Z shell (with oh-my-zsh) over Bash and I like playing Dota 2. 
 I aim to become a core contributer to the Haskell community in the near future.
 
-Currentlt I'm working as a student developer at Haskell.Org under Google Summer of Code.
+Currently I'm working as a student developer at Haskell.Org under Google Summer of Code.
 I'm working on implementing acyclic graphs and extending the alga library.
 
 ### Research Interests
@@ -36,7 +36,7 @@ It's a pretty cool library, you can check it out on hackage.
 **Implementing IPFS in Haskell** 
 ([Github](https://github.com/ipfs-haskell) | Ongoing) 
 
-- Building libraries in Haskell for Inter Planetary File System (A distributed ﬁle system). 
+- Building libraries in Haskell for Inter Planetary File System (A distributed file system). 
 - This will require building all the major libraries from ground-up. 
 - Currently working on building libraries to for implementing Kademlia (A distributed Hash table) in Haskell.
 
@@ -44,16 +44,16 @@ It's a pretty cool library, you can check it out on hackage.
 ([Github](https://github.com/adithyaov/online_voting) | Ongoing)
 
 - An online voting application with the main motto of anonymity and security. 
-- Using the RSA (RivestShamirAdleman) blind signatures for veriﬁcation of the vote. 
+- Using the RSA blind signatures for verification of the vote. 
 - Back-end and the Blind Signatures implemented using Golang
 - Currently building the front-end using ReasonML (strictly typed functional programming which compiles to Javascript)
 
 **Eﬃcient Parking Allocation - India Singapore Hackathon**
 ([Github](https://github.com/adithyaov/eﬃcient-parking-allocation))
 
-- An eﬃcient automated parking allocation system built during 36 hours of continuous coding. 
+- An efficient automated parking allocation system built during 36 hours of continuous coding. 
 - Used OpenCV for image stitching and detecting the location of the vehicle. 
-- Used a norm 2 diﬃng algorithm to check the existence of the vehicle routinely. 
+- Used a norm 2 diffing algorithm to check the existence of the vehicle routinely. 
 
 **General Scheduler - Smart India Hackathon**
 ([Github](https://github.com/adithyaov/general-scheduler))
