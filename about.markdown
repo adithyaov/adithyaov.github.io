@@ -1,6 +1,5 @@
 ---
 title: About me
-author: Adithya Kumar
 img: default.jpg
 sub: A little about me.
 ---

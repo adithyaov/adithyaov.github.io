@@ -6,45 +6,7 @@ img: default.jpg
 <!--
 required-properties: base, title, sub, img, archive?
 -->
-<!-- Page Header -->
-<header class="masthead" style="background-image: url('$base$/img/$img$')">
-  <div class="overlay"></div>
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-8 col-md-10 mx-auto">
-        <div class="site-heading">
-          <h1>$title$</h1>
-          <span class="subheading">$sub$</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</header>
 
-<!-- Main Content -->
-<div class="container">
-  <div class="row">
-    <div class="col-lg-8 col-md-10 mx-auto">
-      $for(posts)$
-        <div class="post-preview">
-          <a href="$url$">
-            <h2 class="post-title">$title$</h2>
-            <h3 class="post-subtitle">$sub$</h3>
-          </a>
-          <p class="post-meta">Updated by
-            <a href="#">$author$</a>
-            on $date$</p>
-        </div>
-        <hr>
-      $endfor$
-      <!-- Pager -->
-      <div class="clearfix">
-        $if(archive)$
-          <a class="disabled btn btn-primary float-right" href="#">Older Posts &rarr;</a>
-        $else$
-          <a class="btn btn-primary float-right" href="$base$/archive.html">Older Posts &rarr;</a>
-        $endif$
-      </div>
-    </div>
-  </div>
-</div>
+$partial("templates/header-focus.html")$
+
+$partial("templates/post-list.html")$

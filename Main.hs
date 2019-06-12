@@ -54,6 +54,17 @@ main =
             "templates/wrapper.html"
             (wConst "year" "2019" . wConst "base" "." $ defaultContext) >>=
           relativizeUrls
+    match "about.markdown" $ do
+      route $ setExtension "html"
+      compile $
+        pandocCompiler >>=
+        loadAndApplyTemplate
+          "templates/info.html"
+          (wConst "base" "." defaultContext) >>=
+        loadAndApplyTemplate
+          "templates/wrapper.html"
+          (wConst "year" "2019" . wConst "base" "." $ defaultContext) >>=
+        relativizeUrls
 
 wDate :: Context String -> Context String
 wDate = mappend (dateField "date" "%B %e, %Y")
