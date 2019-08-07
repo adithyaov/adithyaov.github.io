@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Personal home page and blog of Adithya Kumar.">
+    <title>About me</title>
+    <link rel="stylesheet" href="./css/bare.min.css">
+    <style>
+      html, body {
+        overflow-x: hidden;
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- add the fx attribute to the nav if you want it fixed to the top -->
+    <nav>
+      <!-- this label allows the checkbox to be activated by clicking anywhere in the nav -->
+      <label>
+        <!-- checkbox required for responsiven menu -->
+        <input type="checkbox">
+
+        <!-- bareCSS will use the header to contain the hamburger menu -->
+        <header>
+          <!-- you can leave this empty if you don't want a title -->
+          <a><b>Adi</b>thya</a>
+        </header>
+
+        <!-- the main navigation items are anchor links within an unordered list -->
+        <ul>
+          <li><a href="./index.html">Home</a></li>
+          <li><a href="./about.html">About</a></li>
+          <li>
+            <a>Links</a>
+
+            <!-- use <menu> and <menuitem> within an <li> for dropdowns -->
+            <menu>
+              <menuitem><a href="https://www.github.com/adithyaov">Github</a></menuitem>
+              <menuitem><a href="https://www.linkedin.com/in/adithyaov/">Linkedin</a></menuitem>
+            </menu>
+            </li>
+        </ul>
+      </label>
+    </nav>
+    <section>
+      <blockquote>
+  <b>About me</b> 
+  <p>
+    
+      
+    
+    
+    
+  </p>
+</blockquote>
+<div class="post">
+  <p>I have recently graduated IIT Palakkad in the stream of Computer Science and engineering. I am interested in Functional programming and Mathematics, hence I have a natural predilection towards Haskell. I contribute to the Open Source community whenever possible. I use Vim for most of my tasks, my work environment is basically Vim + Tmux. I prefer the Z shell (with oh-my-zsh) over Bash and I like playing Dota 2. I aim to become a core contributer to the Haskell community in the near future.</p>
+<p>Currently I’m working as a student developer at Haskell.Org under Google Summer of Code. I’m working on implementing acyclic graphs and extending the alga library.</p>
+<h1 id="research-interests">Research Interests</h1>
+<p>My researches interests emerged from trying to understand Haskell. I’m on a path to learn the mathematical concepts behind Haskell. My research interests include <em>Category Theory</em>, <em>Type Theory</em> and <em>Proof Assistants</em>. My final year B.Tech project consists of creating a Haskell library from ground-up for IPFS (Interplanetary File System). I am also required to build all the dependencies of IPFS or use standard Haskell libraries. One such library is Raaz, a cryptographic library used for hashing. Since the Raaz library was created and is maintained by my Project advisor and Professor, Dr. Piyush Kurur, I had the fortunate advantage of learning more about how Raaz functioned. It’s a pretty cool library, you can check it out on hackage.</p>
+<h1 id="recent-projects">Recent Projects</h1>
+<p><strong>Alga - Haskell.Org, Google Summer of Code</strong> (<a href="https://github.com/adithyaov/alga">Github</a> | Ongoing)</p>
+<ul>
+<li>Implementing type-safe acyclic graphs in alga.</li>
+<li>Extending the alga library to include many useful algorithms.</li>
+</ul>
+<p><strong>Implementing IPFS in Haskell</strong> (<a href="https://github.com/ipfs-haskell">Github</a> | Ongoing)</p>
+<ul>
+<li>Building libraries in Haskell for Inter Planetary File System (A distributed file system).</li>
+<li>This will require building all the major libraries from ground-up.</li>
+<li>Currently working on building libraries to for implementing Kademlia (A distributed Hash table) in Haskell.</li>
+</ul>
+<p><strong>Online Voting</strong> (<a href="https://github.com/adithyaov/online_voting">Github</a> | Ongoing)</p>
+<ul>
+<li>An online voting application with the main motto of anonymity and security.</li>
+<li>Using the RSA blind signatures for verification of the vote.</li>
+<li>Back-end and the Blind Signatures implemented using Golang</li>
+<li>Currently building the front-end using ReasonML (strictly typed functional programming which compiles to Javascript)</li>
+</ul>
+<p><strong>Eﬃcient Parking Allocation - India Singapore Hackathon</strong> (<a href="https://github.com/adithyaov/eﬃcient-parking-allocation">Github</a>)</p>
+<ul>
+<li>An efficient automated parking allocation system built during 36 hours of continuous coding.</li>
+<li>Used OpenCV for image stitching and detecting the location of the vehicle.</li>
+<li>Used a norm 2 diffing algorithm to check the existence of the vehicle routinely.</li>
+</ul>
+<p><strong>General Scheduler - Smart India Hackathon</strong> (<a href="https://github.com/adithyaov/general-scheduler">Github</a>)</p>
+<ul>
+<li>A scheduler built for scheduling school or college courses (can be extended to schedule anything).</li>
+<li>Converted the scheduling problem into a Boolean formula with over 16000 variables.</li>
+<li>Used the z3 solver to solve the Boolean formula to get results satisfying the constraints</li>
+</ul>
+<h1 id="contact-details">Contact Details</h1>
+<ul>
+<li>Email: <a href="mailto:adi.obilisetty@gmail.com">adi.obilisetty@gmail.com</a></li>
+<li>Github: <a href="https://github.com/adithyaov">github.com/adithyaov</a></li>
+</ul>
+</div>
+
+    </section>
+    <footer>
+      <p>Site proudly generated by <a href="https://jaspervdj.be/hakyll/">Hakyll</a>.</p>
+    </footer>
+  </body>
+  <script src="./js/jquery.min.js"></script>
+  <script src="./js/heading.js"></script>
+</html>
