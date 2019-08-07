@@ -4,7 +4,7 @@ This is a simple Hakyll template made using [BareCss](http://barecss.com/).
 
 It looks like the following, (Please ignore my face :P)
 
-![reference image](./sample.png)
+![reference image](./sample.PNG)
 
 Live demo: [adithyaov.github.io](https://www.adithyaov.github.io)
 
