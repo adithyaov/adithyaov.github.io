@@ -1,7 +1,7 @@
 ---
 title: About me
-img: default.jpg
-sub: A little about me.
+display-picture: img/me.jpg
+description: I like Functional programming and hope to work at a research institution in the near future.
 ---
 
 I have recently graduated IIT Palakkad in the stream of Computer Science and engineering.
@@ -14,7 +14,7 @@ I aim to become a core contributer to the Haskell community in the near future.
 Currently I'm working as a student developer at Haskell.Org under Google Summer of Code.
 I'm working on implementing acyclic graphs and extending the alga library.
 
-### Research Interests
+# Research Interests
 My researches interests emerged from trying to understand Haskell. I'm on a path to learn
 the mathematical concepts behind Haskell. My research interests include *Category Theory*, *Type Theory* and 
 *Proof Assistants*.
@@ -25,7 +25,7 @@ Since the Raaz library was created and is maintained by my Project advisor and P
 I had the fortunate advantage of learning more about how Raaz functioned.
 It's a pretty cool library, you can check it out on hackage.
 
-### Recent Projects
+# Recent Projects
 
 **Alga - Haskell.Org, Google Summer of Code** 
 ([Github](https://github.com/adithyaov/alga) | Ongoing) 
@@ -62,7 +62,7 @@ It's a pretty cool library, you can check it out on hackage.
 - Converted the scheduling problem into a Boolean formula with over 16000 variables. 
 - Used the z3 solver to solve the Boolean formula to get results satisfying the constraints
 
-### Contact Details
+# Contact Details
 
 - Email: [adi.obilisetty@gmail.com](mailto:adi.obilisetty@gmail.com)
 - Github: [github.com/adithyaov](https://github.com/adithyaov)
