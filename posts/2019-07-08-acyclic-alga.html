@@ -65,7 +65,7 @@
 <p>Acyclic graphs are both common and heavily used in dependency management. This is demonstrated in the section <strong>Construction from algebraic graph and a partial order</strong> but unfortunately even this is removed from the final draft due to being unsafe.</p>
 <p>It would also makes it easier to work with algorithms like <code>scc</code> or <code>topSort</code> as has been remarked in <a href="https://github.com/snowleopard/alga/issues/152">some</a> <a href="https://github.com/snowleopard/alga/issues/154">issues</a>.</p>
 <h1 id="construction-methods">Construction methods</h1>
-<p>Below are a few ways one could construct an acyclic graph. In the <a href="Acyclic.AdjacencyMap">final draft</a> few construction methods have been removed for being unsafe.</p>
+<p>Below are a few ways one could construct an acyclic graph. In the <a href="https://github.com/snowleopard/alga/blob/master/src/Algebra/Graph/Acyclic/AdjacencyMap.hs">final draft</a> few construction methods have been removed for being unsafe.</p>
 <h2 id="scc-algorithm">SCC algorithm</h2>
 <p>One straightforward way to construct an acyclic graph was by using the SCC algorithm. We all know that a graph of SCC is acyclic and hence can be used to construct acyclic graphs.</p>
 <p>The following is the signature for <code>scc</code> in Alga,</p>
@@ -92,7 +92,7 @@ partialOrder (_, x) (_, y) = x &lt; y</code></pre>
 <p><a href="https://github.com/snowleopard/alga/blob/master/src/Algebra/Graph/Acyclic/AdjacencyMap/Ord.hs">Algebra.Graph.Acyclic.AdjacencyMap.Ord</a> is created for the completeness of <a href="https://github.com/snowleopard/alga/blob/master/src/Algebra/Graph/Acyclic/AdjacencyMap.hs">Algebra.Graph.Acyclic.AdjacencyMap</a>. As mentioned earlier, ease of use is an important motivation for the library. The <code>Ord</code> module makes it easier to use acyclic graphs by providing operators like <code>connect</code>, <code>overlay</code>, etc.</p>
 <p>This module highly depends on the <code>Ord</code> instance of the vertices. Every operation in this module makes sure that for any 2 vertices <code>x</code> and <code>y</code> in the graph, an edge can exist between <code>x</code> and <code>y</code> if and only if <code>x &lt; y</code>. This is similar to the partial order construction method but uses the <code>Ord</code> instance of the element itself.</p>
 <h1 id="the-shrink-operator">The Shrink Operator</h1>
-<p>An amazing observation made by <a href="https://github.com/snowleopard">Andrey Mokhov</a> was that one can use <code>scc</code> to create a method of acyclic graph construction which is safe and complete.</p>
+<p>An amazing observation made by [Andrey Mokhov][snowleopard] was that one can use <code>scc</code> to create a method of acyclic graph construction which is safe and complete.</p>
 <p>We can define <code>shrink</code> as,</p>
 <pre><code>shrink :: AdjacencyMap a -&gt; Acyclic.AdjacencyMap a
 shrink am = AAM (Map.map (NonEmpty.head . NonEmpty.vertexList1) aam)
