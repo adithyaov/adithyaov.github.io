@@ -4,12 +4,12 @@ category: alga pinned
 ---
 
 **Alga** is a library for algebraic construction and manipulation of graphs in Haskell. See
-[this Haskell Symposium paper](https://github.com/snowleopard/alga-paper) and the
-corresponding [talk](https://www.youtube.com/watch?v=EdQGLewU-8k) for the motivation
+[this Haskell Symposium paper][paper] and the
+corresponding [talk][talk1] for the motivation
 behind the library, the underlying theory and implementation details. There is also a
-[Haskell eXchange talk](https://skillsmatter.com/skillscasts/10635-algebraic-graphs), 
-and a [tutorial](https://nobrakal.github.io/alga-tutorial) by Alexandre Moine.
-Please visit the [wiki](https://github.com/snowleopard/alga/wiki) for more information.
+[Haskell eXchange talk][talk2], 
+and a [tutorial][tutorial] by Alexandre Moine.
+Please visit the [wiki][wiki] for more information.
 
 # Motivation behind acyclic graphs
 
@@ -24,12 +24,11 @@ management. This is demonstrated in the section
 even this is removed from the final draft due to being unsafe.
 
 It would also makes it easier to work with algorithms like `scc` or `topSort`
-as has been remarked in [some](https://github.com/snowleopard/alga/issues/152)
-[issues](https://github.com/snowleopard/alga/issues/154).
+as has been remarked in [some][issue#152] [issues][issue#154].
 
 # Construction methods
 
-Below are a few ways one could construct an acyclic graph. In the [final draft](Acyclic.AdjacencyMap)
+Below are a few ways one could construct an acyclic graph. In the [final draft][Acyclic.AdjacencyMap]
 few construction methods have been removed for being unsafe.
 
 ## SCC algorithm
@@ -102,7 +101,7 @@ method but uses the `Ord` instance of the element itself.
 
 # The Shrink Operator
 
-An amazing observation made by [Andrey Mokhov](https://github.com/snowleopard)
+An amazing observation made by [Andrey Mokhov][snowleopard]
 was that one can use `scc` to create a method of acyclic graph
 construction which is safe and complete.
 
@@ -115,7 +114,7 @@ shrink am = AAM (Map.map (NonEmpty.head . NonEmpty.vertexList1) aam)
 ```
 
 One could potentially replace `Ord` instance completely with `shrink`
-operations. This has been demonstrated in [this gist](https://gist.github.com/adithyaov/bf3bf5d595bc1bb587d0aea03f1b3412).
+operations. This has been demonstrated in [this gist][shrink gist].
 
 Unfortunately, with the current implementation of `shrink`,
 few important mathematical properties will be broken. 
@@ -139,5 +138,14 @@ of `shrink` would increase the usability and effectiveness of the
 library. A proper implementation of `shrink` would replace the `Ord`
 module and many other functions completely.
 
+[paper]: https://github.com/snowleopard/alga-paper
+[talk1]: https://www.youtube.com/watch?v=EdQGLewU-8k
+[talk2]: https://skillsmatter.com/skillscasts/10635-algebraic-graphs
+[tutorial]: https://nobrakal.github.io/alga-tutorial
+[wiki]: https://github.com/snowleopard/alga/wiki
+[issue#152]: https://github.com/snowleopard/alga/issues/152
+[issue#154]: https://github.com/snowleopard/alga/issues/154
+[snowleapord]: https://github.com/snowleopard 
+[shrink gist]: https://gist.github.com/adithyaov/bf3bf5d595bc1bb587d0aea03f1b3412
 [Acyclic.AdjacencyMap]: https://github.com/snowleopard/alga/blob/master/src/Algebra/Graph/Acyclic/AdjacencyMap.hs
 [Acyclic.AdjacencyMap.Ord]: https://github.com/snowleopard/alga/blob/master/src/Algebra/Graph/Acyclic/AdjacencyMap/Ord.hs
