@@ -1,5 +1,5 @@
 ---
-title: Introduction of Acyclic graphs in Alga
+title: Experimenting with acyclic graphs in Alga
 category: alga pinned
 ---
 
@@ -11,26 +11,19 @@ behind the library, the underlying theory and implementation details. There is a
 and a [tutorial](https://nobrakal.github.io/alga-tutorial) by Alexandre Moine.
 Please visit the [wiki](https://github.com/snowleopard/alga/wiki) for more information.
 
-# The Module
-
-According to the naming conventions in Alga, the module that contained
-the adjacency map for the acyclic graph is named 
-[Algebra.Graph.Acyclic.AdjacencyMap][Acyclic.AdjacencyMap].
-There is also a module named [Algebra.Graph.Acyclic.AdjacencyMap.Ord][Acyclic.AdjacencyMap.Ord]
-which is an extension of [Algebra.Graph.Acyclic.AdjacencyMap][Acyclic.AdjacencyMap].
-described later in this blog.
-
 # Motivation behind acyclic graphs
 
+The basic idea is that the user should be able to use acyclic graphs without
+many restrictions. Ideally the user should not be able to compile programs
+that result in an acyclic graph. The avenue of a strict type safe acyclic graphs
+was explored but due to the limitations of type system this was not possible.
+ 
 Acyclic graphs are both common and heavily used in dependency
-management. Improvements in this area would therefore directly
-benefit downstream packages like [build](https://github.com/snowleopard/build),
-[plutus](https://github.com/input-output-hk/plutus) or
-[aura](https://github.com/aurapm/aura),
-as well as a few commercial users of the library.
+management. This is demonstrated in the section 
+**Construction from algebraic graph and a partial order** but unfortunately
+even this is removed from the final draft due to being unsafe.
 
-In particular, the result should be a type-safe abstraction,
-that makes it easier to work with algorithms like `scc` or `topSort`
+It would also makes it easier to work with algorithms like `scc` or `topSort`
 as has been remarked in [some](https://github.com/snowleopard/alga/issues/152)
 [issues](https://github.com/snowleopard/alga/issues/154).
 
@@ -66,6 +59,23 @@ type PartialOrder a = a -> a -> Bool
 fromGraph :: Ord a => PartialOrder a -> Graph a -> Acyclic.AdjacencyMap a
 ```
 
+Example (The following is similar to dependency management):
+
+Here is a simple example where we do have a partial order in advance:
+* Every object file depends only on C source files: `file.c` < `file.o`.
+* Every executable depends only on object files: `file.o` < `file.exe`.
+
+Here we could just use `<` from the derived `Ord` instance for the extension data type:
+
+```
+data Extension = C | O | Exe deriving (Eq, Ord)
+
+type File = (FilePath, Extension)
+
+partialOrder :: PartialOrder File
+partialOrder (_, x) (_, y) = x < y
+```
+
 The problem with this is the fact that the construction of the acyclic
 graph is dependent on the partial order provided. One could potentially
 make cyclic graphs given an improper partial order such as,
@@ -80,12 +90,15 @@ inconsistent graph itself). This, being an extreme case, is ignored.
 
 [Algebra.Graph.Acyclic.AdjacencyMap.Ord][Acyclic.AdjacencyMap.Ord] is
 created for the completeness of [Algebra.Graph.Acyclic.AdjacencyMap][Acyclic.AdjacencyMap].
+As mentioned earlier, ease of use is an important motivation for the library.
+The `Ord` module makes it easier to use acyclic graphs by providing operators like
+`connect`, `overlay`, etc.
+
 This module highly depends on the `Ord` instance of the vertices.
 Every operation in this module makes sure that for any 2 vertices
 `x` and `y` in the graph, an edge can exist between `x` and `y` if
 and only if `x < y`. This is similar to the partial order construction
 method but uses the `Ord` instance of the element itself.
-
 
 # The Shrink Operator
 
@@ -116,6 +129,8 @@ meaning. Because `vertex 1 + edge 2 3` will suddenly become
 
 # Conclusion
 
+Although the `Ord` module makes it easier to work with acyclic graphs,
+it is not complete.
 `shrink` is a beautiful and a powerful operator which provides a
 safe and a complete way to construct acyclic graphs. But it cannot
 be used with the current implementation due to its side effects
