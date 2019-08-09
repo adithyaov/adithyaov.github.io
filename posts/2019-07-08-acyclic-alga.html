@@ -59,7 +59,7 @@
   </p>
 </blockquote>
 <div class="post">
-  <p><strong>Alga</strong> is a library for algebraic construction and manipulation of graphs in Haskell. See <a href="https://github.com/snowleopard/alga-paper">this Haskell Symposium paper</a> and the corresponding <a href="https://www.youtube.com/watch?v=EdQGLewU-8k">talk</a> for the motivation behind the library, the underlying theory and implementation details. There is also a <a href="https://skillsmatter.com/skillscasts/10635-algebraic-graphs">Haskell eXchange talk</a>, and a <a href="https://nobrakal.github.io/alga-tutorial">tutorial</a> by Alexandre Moine. Please visit the <a href="https://github.com/snowleopard/alga/wiki">wiki</a> for more information.</p>
+  <p>The following post describes the ideas and experiments conducted to work safely with acyclic graphs in [Alga][alga]. Some of these are in the final draft and some aren’t included due to issues with safety.</p>
 <h1 id="motivation-behind-acyclic-graphs">Motivation behind acyclic graphs</h1>
 <p>The basic idea is that the user should be able to use acyclic graphs without many restrictions. Ideally the user should not be able to compile programs that result in an acyclic graph. The avenue of a strict type safe acyclic graphs was explored but due to the limitations of type system this was not possible.</p>
 <p>Acyclic graphs are both common and heavily used in dependency management. This is demonstrated in the section <strong>Construction from algebraic graph and a partial order</strong> but unfortunately even this is removed from the final draft due to being unsafe.</p>
