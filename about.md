@@ -49,7 +49,7 @@ It's a pretty cool library, you can check it out on hackage.
 - Currently building the front-end using ReasonML (strictly typed functional programming which compiles to Javascript)
 
 **Eﬃcient Parking Allocation - India Singapore Hackathon**
-([Github](https://github.com/adithyaov/eﬃcient-parking-allocation))
+([Github](https://github.com/adithyaov/efficient-parking-allocation))
 
 - An efficient automated parking allocation system built during 36 hours of continuous coding. 
 - Used OpenCV for image stitching and detecting the location of the vehicle. 

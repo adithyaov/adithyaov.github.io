@@ -3,13 +3,9 @@ title: Experimenting with acyclic graphs in Alga
 category: alga pinned
 ---
 
-**Alga** is a library for algebraic construction and manipulation of graphs in Haskell. See
-[this Haskell Symposium paper][paper] and the
-corresponding [talk][talk1] for the motivation
-behind the library, the underlying theory and implementation details. There is also a
-[Haskell eXchange talk][talk2], 
-and a [tutorial][tutorial] by Alexandre Moine.
-Please visit the [wiki][wiki] for more information.
+The following post describes the ideas and experiments conducted to work
+safely with acyclic graphs in [Alga][alga]. Some of these are in the final
+draft and some aren't included due to issues with safety.
 
 # Motivation behind acyclic graphs
 
