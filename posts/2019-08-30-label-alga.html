@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Personal home page and blog of Adithya Kumar.">
+    <title>The Label Module</title>
+    <link rel="stylesheet" href="../css/bare.min.css">
+    <style>
+      html, body {
+        overflow-x: hidden;
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- add the fx attribute to the nav if you want it fixed to the top -->
+    <nav>
+      <!-- this label allows the checkbox to be activated by clicking anywhere in the nav -->
+      <label>
+        <!-- checkbox required for responsiven menu -->
+        <input type="checkbox">
+
+        <!-- bareCSS will use the header to contain the hamburger menu -->
+        <header>
+          <!-- you can leave this empty if you don't want a title -->
+          <a><b>Adi</b>thya</a>
+        </header>
+
+        <!-- the main navigation items are anchor links within an unordered list -->
+        <ul>
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="../about.html">About</a></li>
+          <li>
+            <a>Links</a>
+
+            <!-- use <menu> and <menuitem> within an <li> for dropdowns -->
+            <menu>
+              <menuitem><a href="https://www.github.com/adithyaov">Github</a></menuitem>
+              <menuitem><a href="https://www.linkedin.com/in/adithyaov/">Linkedin</a></menuitem>
+            </menu>
+            </li>
+        </ul>
+      </label>
+    </nav>
+    <section>
+      <blockquote>
+  <b>The Label Module</b> 
+  <p>
+    
+      Posted
+    
+    
+      on <a>August 30, 2019</a>
+    
+    
+      by <a>Adithya Kumar</a>
+    
+  </p>
+</blockquote>
+<div class="post">
+  <p>The initial plan for this post was to explain how the <a href="https://hackage.haskell.org/package/algebraic-graphs-0.4/docs/Algebra-Graph-Label.html">Label</a> module worked in <a href="https://hackage.haskell.org/package/algebraic-graphs-0.4">Alga</a> but instead I think it is easier to develop a mini version of the module from scratch. This would help in a deeper understanding of how the module is built.</p>
+<p>Before we dive into the creation of the module itself we will look at requirements of some basic <a href="https://en.wikipedia.org/wiki/Algebraic_structure">algebraic structures</a>. In particular we will look at the definition of <a href="https://en.wikipedia.org/wiki/Monoid">Monoid</a> and <a href="https://en.wikipedia.org/wiki/Semiring">Semiring</a>.</p>
+<h1 id="monoid">Monoid</h1>
+<p>A semiring is a set <code>S</code> equipped with a binary operation <code>&lt;&gt;</code> satisfying the following two axioms:</p>
+<ol type="1">
+<li>Associativity: For all <code>a</code>, <code>b</code> and <code>c</code> in <code>S</code>, the equation <code>(a &lt;&gt; b) &lt;&gt; c = a &lt;&gt; (b &lt;&gt; c)</code> holds.</li>
+<li>Identity element: There exists an element <code>e</code> in <code>S</code> such that for every element <code>a</code> in <code>S</code>, the equations <code>e &lt;&gt; a = a &lt;&gt; e = a</code> hold.</li>
+</ol>
+<p>Some examples of monoids in Haskell are <code>(Int, +, 0)</code>, <code>(Int, *, 1)</code>, <code>([a], ++, [])</code> (list data type), etc. It is easy to see that both the required axioms are followed for all the mentioned data types.</p>
+<p>This algebraic structure is very common in programming and fortunately, there is already a <code>Monoid</code> type class implemented in the base library as <a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Monoid.html">Data.Monoid</a>.</p>
+<h2 id="commutative-monoid">Commutative Monoid</h2>
+<p>A commutative monoid is a monoid that also satisfies the commutative property. That is, for all <code>a</code> and <code>b</code> in <code>S</code>, the equation <code>a &lt;&gt; b = b &lt;&gt; a</code> holds.</p>
+<p>It can be seen that <code>(Int, +, 0)</code> and <code>(Int, *, 1)</code> are commutative monoids whereas <code>([a], ++, [])</code> is not a commutative monoid.</p>
+<h1 id="semiring">Semiring</h1>
+<p>A semiring is a set <code>R</code> equipped with two binary operations <code>&lt;+&gt;</code> and <code>&lt;.&gt;</code>, called addition and multiplication, and two elements in <code>R</code>, <code>zero</code> and <code>one</code> such that:</p>
+<ol type="1">
+<li><code>(R, &lt;+&gt;, zero)</code> is a commutative monoid:</li>
+</ol>
+<pre><code>(a + b) + c = a + (b + c)
+zero + a = a + zero = a
+a + b = b + a</code></pre>
+<ol start="2" type="1">
+<li><code>(R, &lt;.&gt;, one)</code> is a monoid:</li>
+</ol>
+<pre><code>(a &lt;.&gt; b) &lt;.&gt; c = a &lt;.&gt; (b &lt;.&gt; c)
+one &lt;.&gt; a = a &lt;.&gt; one = a</code></pre>
+<ol start="3" type="1">
+<li>Multiplication (<code>&lt;.&gt;</code>) left and right distributes over Addition (<code>&lt;+&gt;</code>):</li>
+</ol>
+<pre><code>a &lt;.&gt; (b &lt;+&gt; c) = (a &lt;.&gt; b) &lt;+&gt; (a &lt;.&gt; c)
+(a + b)⋅c = (a⋅c) + (b⋅c)</code></pre>
+<ol start="4" type="1">
+<li>Multiplication (<code>&lt;.&gt;</code>) by <code>zero</code> annihilates <code>R</code>:</li>
+</ol>
+<pre><code>zero &lt;.&gt; a = a &lt;.&gt; zero = zero</code></pre>
+<p>The most natural semiring that one can think of is <code>(Int, +, *, 0, 1)</code>. It is easy to see that it follows all the semiring laws.</p>
+<h1 id="implementation-of-semiring">Implementation of semiring</h1>
+<p>Unfortunately, the base library does not provide a type class for semirings. Let’s create a simple implementation of the semiring type class.</p>
+<pre><code>class (Monoid a) =&gt; Semiring a where
+    (&lt;+&gt;) :: a -&gt; a -&gt; a
+    (&lt;.&gt;) :: a -&gt; a -&gt; a
+    zero  :: a
+    one   :: a</code></pre>
+<p>We could simplify the above implementation. Since we already know that <code>a</code> is already a monoid we can abstract out <code>&lt;+&gt;</code> and <code>zero</code>. We could rewrite the above as:</p>
+<pre><code>class (Monoid a) =&gt; Semiring a where
+    (&lt;.&gt;) :: a -&gt; a -&gt; a
+    one   :: a
+
+(&lt;+&gt;) = (&lt;&gt;)
+zero = mempty</code></pre>
+<p><strong>Note:</strong> Note that just because a data type has an instance of <code>Semiring</code> does not guarantee that it follows all the semiring laws.</p>
+<h1 id="the-distance-semiring">The Distance semiring</h1>
+<p>The <code>Distance</code> semiring is implemented on a set of non-negative numbers. By numbers, I mean any data type that implements the <code>Num</code> type class.</p>
+<p>We have to first come up with a way to capture the notion of a non-negative number. Non-negative numbers can be finite or infinite, so before we create a data type for capturing Non-negative numbers we need to create a data type to capture finite and infinite numbers.</p>
+<h2 id="the-extended-data-type">The Extended data type</h2>
+<p>This data type is intended to capture finiteness and infinity of a type.</p>
+<pre><code>data Extended a = Finite a | Infinite
+    deriving (Eq, Functor, Ord, Show)</code></pre>
+<p>Now let’s create a <code>Num</code> instance for <code>Extended</code>.</p>
+<pre><code>instance Num a =&gt; Num (Extended a) where
+    fromInteger = Finite . fromInteger
+
+    Infinite + _ = Infinite
+    _ + Infinite = Infinite
+    Finite x + Finite y = Finite $ x + y
+
+    Finite 0 * _ = Finite 0
+    _ * Finite 0 = Finite 0
+    Finite x * Finite y = Finite $ x * y
+
+    negate = fmap negate
+    signum = fmap signum
+    abs    = fmap abs</code></pre>
+<p>Please note that when we use <code>0</code>, it is not the integer <code>0</code>. We can rely on the Haskell ecosystem to generate the proper <code>0</code> using the given <code>Num</code> instance.</p>
+<h2 id="the-nonnegative-data-type">The NonNegative data type</h2>
+<p>Now that we have created the <code>Extended</code>, we can proceed to create a datatype to capture Non-negative numbers.</p>
+<pre><code>newtype NonNegative a = NonNegative (Extended a)
+    deriving (Applicative, Eq, Functor, Ord, Monad)</code></pre>
+<p>Similar to <code>Extended</code> lets create the <code>Num</code> instance.</p>
+<pre><code>instance (Num a, Ord a) =&gt; Num (NonNegative a) where
+    fromInteger x | f &lt; 0     = error &quot;NonNegative values cannot be negative&quot;
+                  | otherwise = unsafeFinite f
+      where
+        f = fromInteger x
+
+    (+) = coerce ((+) :: Extended a -&gt; Extended a -&gt; Extended a)
+    (*) = coerce ((*) :: Extended a -&gt; Extended a -&gt; Extended a)
+
+    negate _ = error &quot;NonNegative values cannot be negated&quot;
+
+    signum (NonNegative Infinite) = 1
+    signum x = signum &lt;$&gt; x
+    abs = id</code></pre>
+<p>From here on, whenever we see <code>NonNegative</code> data type we can be sure that it is a non-negative number.</p>
+<p>Finally, lets create the <code>Distance</code> semiring.</p>
+<pre><code>newtype Distance a = Distance (Min (NonNegative a))
+    deriving (Bounded, Eq, Monoid, Num, Ord, Semigroup)</code></pre>
+<p>Notice the <code>Min</code> wrapping <code>NonNegative</code>. <code>Min</code> can be found in the base library in <a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Semigroup.html">Data.Semigroup</a>. It has an instance of <code>Monoid</code> that naturally finds the minimum (<code>(&lt;&gt;) = min</code>). This means that this semiring is suitable to find the minimum naturally. As we will see later, this semiring can be used to find minimum distance in a graph. We could have also written this as <code>Distance (Max (NonNegative a))</code> which is naturally built for finding the maximum.</p>
+<p>The <code>Semiring</code> instance would be something like:</p>
+<pre><code>instance (Num a, Ord a) =&gt; Semiring (Distance a) where
+    one   = 0
+    (&lt;.&gt;) = (+)</code></pre>
+<p>Let’s try a few equations with <code>Distance</code>.</p>
+<pre><code>(4 :: Distance Int) &lt;+&gt; 5 = 4
+(4 :: Distance Int) &lt;.&gt; 5 = 9</code></pre>
+<p>How would this help us while using a labelled graph? Let’s say we have 2 vertices <code>x</code> and <code>y</code> with current <code>Distance</code> values <code>v1</code> and <code>v2</code> attached to <code>x</code> and <code>y</code> and let <code>e</code> be the <code>Distance</code> value of the edge between <code>x</code> and <code>y</code>. Let’s also define a function on an edge <code>(e, v1, v2)</code> as <code>f v2 = v2 &lt;+&gt; (v1 &lt;.&gt; e)</code>. If we update the value at <code>y</code> to <code>f v2</code>, we can see that <code>f</code> is equivalent to relaxation of the edge between <code>x</code> and <code>y</code>.</p>
+<p>Notice that in the distance semiring, <code>&lt;+&gt;</code> selects one of its arguments. That is, <code>x &lt;+&gt; y == x || x &lt;+&gt; y == y</code>. This kind of semiring is called a selective semiring.</p>
+<p>Lets define another semiring called <code>Count</code>.</p>
+<pre><code>newtype Count a = Count (Sum (NonNegative a))
+    deriving (Bounded, Eq, Monoid, Num, Ord, Semigroup)</code></pre>
+<p><code>Sum</code> similar to <code>Min</code> is a monoid that naturally find the sum of elements (<code>(&lt;&gt;) = (+)</code>)</p>
+<p>The <code>Semiring</code> instance would be something like:</p>
+<pre><code>instance (Num a, Ord a) =&gt; Semiring (Count a) where
+    one   = 1
+    (&lt;.&gt;) = (*)</code></pre>
+<p>Let’s try a few equations with <code>Count</code>.</p>
+<pre><code>(4 :: Count Int) &lt;+&gt; 5 = 9
+(4 :: Count Int) &lt;.&gt; 5 = 20</code></pre>
+<p>Unlike <code>Distance</code>, <code>Count</code> is not a selective semiring.</p>
+<p>With the previous idea of relaxation in mind, let’s define a simple relaxation algorithm for labelled graphs which relaxes all the edges <code>n</code> times, where <code>n</code> is the number of vertices. This is similar to Bellman-Ford algorithm. Note that for keeping things simple, the following is a psuedo code and not real haskell. Assume that <code>insert</code> and <code>find</code> are operations that somehow update the <code>Map</code>.</p>
+<pre><code>insert :: a -&gt; e -&gt; Map a e
+
+find :: a -&gt; Map a e -&gt; e
+
+relax :: (Semiring e) =&gt; a -&gt; Labelled.AdjacencyMap e a -&gt; Map a e
+relax s g =
+  map init (vertices g)
+  insert s one
+  for i = 1 to (length (vertices g)):
+    map relax (edges g)
+
+init v =
+  insert v zero
+
+relax (e, v1, v2) =
+  insert v2 ((find v2) &lt;+&gt; ((find v1) &lt;.&gt; e))</code></pre>
+<p>Basically, we take a source vertex and make it’s value <code>one</code> then relax all the edges <code>n</code> times, where <code>n</code> is the number of vertices. Hopefully tand he algorithm is somewhat understandable.</p>
+<p>We can now use this algorithm with the <code>Distance</code> semiring. When we use the <code>Distance</code> semiring, this is nothing but a single source shortest path algorithm.</p>
+<p>Now, say we want to somehow find the shortest distance to each vertex and count the number of shortest paths. We can either make a different type of semiring or we can just somehow combine <code>Distance</code> with <code>Count</code>. Since we all love programming with combination lets make a way to combine two semirings.</p>
+<h1 id="the-optimum-data-type">The Optimum data type</h1>
+<p>Lets define <code>Optimum</code> with a semiring <code>o</code> that has an optimizing criterion and a semiring <code>a</code> that keeps track of some argument. Although I say that <code>a</code> should be a semiring we can relax few properties on the semiring depending on <code>a</code>. For example in <a href="https://hackage.haskell.org/package/algebraic-graphs-0.4/docs/Algebra-Graph-Label.html">Algebra.Graph.Label</a> the data type <code>Minimum</code>, although it has an instance of <code>Semiring</code>, is not a semiring but a near left ring.</p>
+<pre><code>data Optimum o a = Optimum { getOptimum :: o, getArgument :: a }
+    deriving (Eq, Ord, Show)
+
+instance (Eq o, Monoid a, Monoid o) =&gt; Monoid (Optimum o a) where
+    zero = Optimum zero zero 
+    Optimum o1 a1 &lt;&gt; Optimum o2 a2
+        | o1 == o2  = Optimum o1 (mappend a1 a2)
+        | otherwise = Optimum o a
+            where
+              o = mappend o1 o2
+              a = if o == o1 then a1 else a2
+
+instance (Eq o, Semiring a, Semiring o) =&gt; Semiring (Optimum o a) where
+    one = Optimum one one
+    Optimum o1 a1 &lt;.&gt; Optimum o2 a2 = Optimum (o1 &lt;.&gt; o2) (a1 &lt;.&gt; a2)</code></pre>
+<p>Please note that <code>&lt;&gt;</code> is actually an operation of <code>Semigroup</code> type class but I’m using <code>&lt;&gt;</code> and <code>mappend</code> interchangeably.</p>
+<p>Now consider the semiring <code>Optimum (Distance Int) (Count Int)</code>. If possible, take out a paper and try the above relaxation algorithm with a simple graph using this semiring as the edge type. You will see that we have achieved the required task finding shortest distance along with counting the number of shortest paths.</p>
+<h1 id="conclusion">Conclusion</h1>
+<p>We made a simple prototype of the library <a href="https://hackage.haskell.org/package/algebraic-graphs-0.4/docs/Algebra-Graph-Label.html">Algebra.Graph.Label</a>. Hopefully this post helped you gain a deeper understanding of the module.</p>
+</div>
+
+    </section>
+    <footer>
+      <p>Site proudly generated by <a href="https://jaspervdj.be/hakyll/">Hakyll</a>.</p>
+    </footer>
+  </body>
+  <script src="../js/jquery.min.js"></script>
+  <script src="../js/heading.js"></script>
+</html>
