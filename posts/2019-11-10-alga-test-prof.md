@@ -446,6 +446,7 @@ From:
 
 To:
 
+```
 ...
     putStrLn "\n============ PowerSet ============"
     test "Semiring" $ size10 $ \(a :: PowerSet (Path Int)) b c -> testSemiring a b c
