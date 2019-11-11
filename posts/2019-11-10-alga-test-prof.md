@@ -1,3 +1,4 @@
+
 ---
 title: Profiling Alga's test suite
 category: alga pinned
@@ -112,12 +113,12 @@ main = do
 ```
 
 Please note that the text after `SCC` can be anything. I prefixed the text with
-`ANN` as it would be easier to filter it out.
+`Ann` as it would be easier to filter it out.
 
 Now compile the test suite (`test-alga`) with profiling enabled. We can set the
 `profiling-detail` to `None`. Once compiled run the test suite with `-p`
 enclosed within `RTS` options, like so: `./test-alga +RTS -p -RTS`. This should
-start running the test suite. Once it completes its execution, a file named
+start running the test suite. After execution is finished, a file named
 `test-alga.prof` would be available in the same directory. This has all the
 profiling information.
 
@@ -288,7 +289,7 @@ testBipartiteAdjacencyMap = do
   ...
 
   putStrLn "\n============ Bipartite.AdjacencyMap.toBipartite ============"
-  test "leftAdjacencyMap (toBipartite empty)                                                                                                   == Map.empty" $
+  test "leftAdjacencyMap (toBipartite empty) == Map.empty" $
       (leftAdjacencyMap $ toBipartite (AM.empty :: AII)) == Map.empty
   ...
 ```
@@ -309,7 +310,7 @@ testBipartiteAdjacencyMap = do
 
   {-# SCC "Ann2.toBipartite " -#} do
     putStrLn "\n============ Bipartite.AdjacencyMap.toBipartite ============"
-    test "leftAdjacencyMap (toBipartite empty)                                                                                                   == Map.empty" $
+    test "leftAdjacencyMap (toBipartite empty) == Map.empty" $
         (leftAdjacencyMap $ toBipartite (AM.empty :: AII)) == Map.empty
     ...
 ```
@@ -324,85 +325,91 @@ now, we'll profile everything.
 ```
 > grep Ann2\. test-alga.prog
 
-Ann2.Eq                 Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(647,27)-(682,28)  10853          1    0.0    0.0     3.3    2.8
-Ann2.Num                Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(634,28)-(645,88)  10766          1    0.0    0.0     0.0    0.0
-Ann2.Show               Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(684,29)-(705,77)  11090          1    0.0    0.0     0.0    0.0
-Ann2.biclique           Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(720,33)-(729,69)  11421          1    0.0    0.0     0.0    0.0
-Ann2.circuit            Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(707,32)-(718,84)  11177          1    0.0    0.0     0.0    0.0
-Ann2.connect            Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(336,32)-(361,146)  5464          1    0.0    0.0     1.3    1.2
-Ann2.connects           Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(406,33)-(417,49)   6442          1    0.0    0.0    21.0   10.5
-Ann2.consistent         Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(39,35)-(58,33)     2385          1    0.0    0.0     0.2    0.2
-Ann2.detectParts        Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(731,36)-(778,94)  11652          1    0.0    0.0     0.4    0.4
-Ann2.edge               Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(300,29)-(313,87)   4977          1    0.0    0.0     0.0    0.0
-Ann2.edgeCount          Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(469,34)-(480,58)   7639          1    0.0    0.0     0.0    0.0
-Ann2.edgeList           Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(571,33)-(584,60)   9602          1    0.0    0.0     0.0    0.0
-Ann2.edgeSet            Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(619,32)-(632,59)  10533          1    0.0    0.0     0.0    0.0
-Ann2.edges              Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(378,30)-(391,38)   5960          1    0.0    0.0     0.0    0.0
-Ann2.empty              Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(246,30)-(257,42)   4074          1    0.0    0.0     0.0    0.0
-Ann2.fromBipartite      Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(181,38)-(201,75)   3404          1    0.0    0.0     0.1    0.1
-Ann2.fromGraph          Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(128,34)-(179,40)   3183          1    0.0    0.0     0.0    0.0
-Ann2.hasEdge            Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(203,32)-(214,44)   3652          1    0.0    0.0     0.1    0.1
-Ann2.hasLeftVertex      Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(482,38)-(491,54)   7891          1    0.0    0.0     0.0    0.0
-Ann2.hasRightVertex     Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(493,39)-(502,56)   8112          1    0.0    0.0     0.0    0.0
-Ann2.hasVertex          Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(504,34)-(517,53)   8333          1    0.0    0.0     0.1    0.1
-Ann2.isEmpty            Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(419,32)-(428,35)   6680          1    0.0    0.0     0.1    0.1
-Ann2.leftAdjacencyMap   Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(216,41)-(229,103)  3900          1    0.0    0.0     0.0    0.0
-Ann2.leftVertex         Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(259,35)-(270,55)   4314          1    0.0    0.0     0.0    0.0
-Ann2.leftVertexCount    Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(430,40)-(441,88)   6936          1    0.0    0.0     0.0    0.0
-Ann2.leftVertexList     Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(534,39)-(545,37)   8849          1    0.0    0.0     0.1    0.1
-Ann2.leftVertexSet      Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(586,38)-(595,66)   9835          1    0.0    0.0     0.0    0.0
-Ann2.overlay            Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(315,32)-(334,44)   5198          1    0.0    0.0     1.0    0.8
-Ann2.overlays           Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(393,33)-(404,49)   6204          1    0.0    0.0     5.8    5.1
-Ann2.rightAdjacencyMap  Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(231,42)-(244,124)  3987          1    0.0    0.0     0.0    0.0
-Ann2.rightVertex        Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(272,36)-(283,50)   4535          1    0.0    0.0     0.0    0.0
-Ann2.rightVertexCount   Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(443,41)-(454,89)   7169          1    0.0    0.0     0.0    0.0
-Ann2.rightVertexList    Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(547,40)-(558,38)   9097          1    0.0    0.0     0.1    0.1
-Ann2.rightVertexSet     Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(597,39)-(606,67)  10065          1    0.0    0.0     0.0    0.0
-Ann2.swap               Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(519,29)-(532,42)   8600          1    0.0    0.0     0.1    0.1
-Ann2.toBipartite        Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(60,36)-(111,40)    2713          1    0.0    0.0     0.0    0.0
-Ann2.toBipartiteWith    Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(113,40)-(126,74)   2934          1    0.0    0.0     0.2    0.2
-Ann2.vertex             Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(285,31)-(298,53)   4756          1    0.0    0.0     0.0    0.0
-Ann2.vertexCount        Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(456,36)-(467,96)   7402          1    0.0    0.0     0.1    0.1
-Ann2.vertexList         Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(560,35)-(569,33)   9345          1    0.0    0.0     0.1    0.1
-Ann2.vertexSet          Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(608,34)-(617,72)  10295          1    0.0    0.0     0.0    0.0
-Ann2.vertices           Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(363,33)-(376,56)   5719          1    0.0    0.0     0.0    0.0
-Ann2.Num                Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(634,28)-(645,88)  10803          0    0.0    0.0     0.0    0.0
-Ann2.Show               Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(684,29)-(705,77)  11127          0    0.0    0.0     0.0    0.0
-Ann2.biclique           Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(720,33)-(729,69)  11458          0    0.0    0.0     0.0    0.0
-Ann2.circuit            Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(707,32)-(718,84)  11214          0    0.0    0.0     0.0    0.0
-Ann2.connect            Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(336,32)-(361,146)  5501          0    0.0    0.0     0.0    0.0
-Ann2.connects           Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(406,33)-(417,49)   6479          0    0.0    0.0     0.0    0.0
-Ann2.consistent         Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(39,35)-(58,33)     2422          0    0.0    0.0     0.0    0.0
-Ann2.detectParts        Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(731,36)-(778,94)  11689          0    0.0    0.0     0.0    0.0
-Ann2.edge               Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(300,29)-(313,87)   5193          0    0.0    0.0     0.0    0.0
-Ann2.edgeList           Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(571,33)-(584,60)   9639          0    0.0    0.0     0.0    0.0
-Ann2.edgeSet            Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(619,32)-(632,59)  10570          0    0.0    0.0     0.0    0.0
-Ann2.edges              Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(378,30)-(391,38)   5997          0    0.0    0.0     0.0    0.0
-Ann2.fromBipartite      Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(181,38)-(201,75)   3441          0    0.0    0.0     0.0    0.0
-Ann2.fromGraph          Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(128,34)-(179,40)   3220          0    0.0    0.0     0.0    0.0
-Ann2.hasEdge            Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(203,32)-(214,44)   3868          0    0.0    0.0     0.0    0.0
-Ann2.isEmpty            Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(419,32)-(428,35)   6766          0    0.0    0.0     0.0    0.0
-Ann2.leftAdjacencyMap   Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(216,41)-(229,103)  3937          0    0.0    0.0     0.0    0.0
-Ann2.leftVertex         Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(259,35)-(270,55)   4351          0    0.0    0.0     0.0    0.0
-Ann2.leftVertexCount    Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(430,40)-(441,88)   7022          0    0.0    0.0     0.0    0.0
-Ann2.leftVertexList     Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(534,39)-(545,37)   8886          0    0.0    0.0     0.0    0.0
-Ann2.leftVertexSet      Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(586,38)-(595,66)   9872          0    0.0    0.0     0.0    0.0
-Ann2.overlay            Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(315,32)-(334,44)   5235          0    0.0    0.0     0.0    0.0
-Ann2.overlays           Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(393,33)-(404,49)   6241          0    0.0    0.0     0.0    0.0
-Ann2.rightAdjacencyMap  Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(231,42)-(244,124)  4024          0    0.0    0.0     0.0    0.0
-Ann2.rightVertex        Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(272,36)-(283,50)   4572          0    0.0    0.0     0.0    0.0
-Ann2.rightVertexCount   Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(443,41)-(454,89)   7255          0    0.0    0.0     0.0    0.0
-Ann2.rightVertexList    Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(547,40)-(558,38)   9134          0    0.0    0.0     0.0    0.0
-Ann2.rightVertexSet     Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(597,39)-(606,67)  10102          0    0.0    0.0     0.0    0.0
-Ann2.swap               Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(519,29)-(532,42)   8637          0    0.0    0.0     0.0    0.0
-Ann2.toBipartite        Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(60,36)-(111,40)    2750          0    0.0    0.0     0.0    0.0
-Ann2.toBipartiteWith    Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(113,40)-(126,74)   2971          0    0.0    0.0     0.0    0.0
-Ann2.vertex             Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(285,31)-(298,53)   4793          0    0.0    0.0     0.0    0.0
-Ann2.vertexCount        Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(456,36)-(467,96)   7488          0    0.0    0.0     0.0    0.0
-Ann2.vertexList         Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(560,35)-(569,33)   9382          0    0.0    0.0     0.0    0.0
-Ann2.vertexSet          Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(608,34)-(617,72)  10332          0    0.0    0.0     0.0    0.0
-Ann2.vertices           Algebra.Graph.Test.Bipartite.AdjacencyMap     test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(363,33)-(376,56)   5756          0    0.0    0.0     0.0    0.0
+Ann2.Eq                 A    B    C    1    0.0    0.0     3.3    2.8
+Ann2.Num                A    B    C    1    0.0    0.0     0.0    0.0
+Ann2.Show               A    B    C    1    0.0    0.0     0.0    0.0
+Ann2.biclique           A    B    C    1    0.0    0.0     0.0    0.0
+Ann2.circuit            A    B    C    1    0.0    0.0     0.0    0.0
+Ann2.connect            A    B    C    1    0.0    0.0     1.3    1.2
+Ann2.connects           A    B    C    1    0.0    0.0    21.0   10.5
+Ann2.consistent         A    B    C    1    0.0    0.0     0.2    0.2
+Ann2.detectParts        A    B    C    1    0.0    0.0     0.4    0.4
+Ann2.edge               A    B    C    1    0.0    0.0     0.0    0.0
+Ann2.edgeCount          A    B    C    1    0.0    0.0     0.0    0.0
+Ann2.edgeList           A    B    C    1    0.0    0.0     0.0    0.0
+Ann2.edgeSet            A    B    C    1    0.0    0.0     0.0    0.0
+Ann2.edges              A    B    C    1    0.0    0.0     0.0    0.0
+Ann2.empty              A    B    C    1    0.0    0.0     0.0    0.0
+Ann2.fromBipartite      A    B    C    1    0.0    0.0     0.1    0.1
+Ann2.fromGraph          A    B    C    1    0.0    0.0     0.0    0.0
+Ann2.hasEdge            A    B    C    1    0.0    0.0     0.1    0.1
+Ann2.hasLeftVertex      A    B    C    1    0.0    0.0     0.0    0.0
+Ann2.hasRightVertex     A    B    C    1    0.0    0.0     0.0    0.0
+Ann2.hasVertex          A    B    C    1    0.0    0.0     0.1    0.1
+Ann2.isEmpty            A    B    C    1    0.0    0.0     0.1    0.1
+Ann2.leftAdjacencyMap   A    B    C    1    0.0    0.0     0.0    0.0
+Ann2.leftVertex         A    B    C    1    0.0    0.0     0.0    0.0
+Ann2.leftVertexCount    A    B    C    1    0.0    0.0     0.0    0.0
+Ann2.leftVertexList     A    B    C    1    0.0    0.0     0.1    0.1
+Ann2.leftVertexSet      A    B    C    1    0.0    0.0     0.0    0.0
+Ann2.overlay            A    B    C    1    0.0    0.0     1.0    0.8
+Ann2.overlays           A    B    C    1    0.0    0.0     5.8    5.1
+Ann2.rightAdjacencyMap  A    B    C    1    0.0    0.0     0.0    0.0
+Ann2.rightVertex        A    B    C    1    0.0    0.0     0.0    0.0
+Ann2.rightVertexCount   A    B    C    1    0.0    0.0     0.0    0.0
+Ann2.rightVertexList    A    B    C    1    0.0    0.0     0.1    0.1
+Ann2.rightVertexSet     A    B    C    1    0.0    0.0     0.0    0.0
+Ann2.swap               A    B    C    1    0.0    0.0     0.1    0.1
+Ann2.toBipartite        A    B    C    1    0.0    0.0     0.0    0.0
+Ann2.toBipartiteWith    A    B    C    1    0.0    0.0     0.2    0.2
+Ann2.vertex             A    B    C    1    0.0    0.0     0.0    0.0
+Ann2.vertexCount        A    B    C    1    0.0    0.0     0.1    0.1
+Ann2.vertexList         A    B    C    1    0.0    0.0     0.1    0.1
+Ann2.vertexSet          A    B    C    1    0.0    0.0     0.0    0.0
+Ann2.vertices           A    B    C    1    0.0    0.0     0.0    0.0
+Ann2.Num                A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.Show               A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.biclique           A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.circuit            A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.connect            A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.connects           A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.consistent         A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.detectParts        A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.edge               A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.edgeList           A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.edgeSet            A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.edges              A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.fromBipartite      A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.fromGraph          A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.hasEdge            A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.isEmpty            A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.leftAdjacencyMap   A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.leftVertex         A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.leftVertexCount    A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.leftVertexList     A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.leftVertexSet      A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.overlay            A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.overlays           A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.rightAdjacencyMap  A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.rightVertex        A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.rightVertexCount   A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.rightVertexList    A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.rightVertexSet     A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.swap               A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.toBipartite        A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.toBipartiteWith    A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.vertex             A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.vertexCount        A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.vertexList         A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.vertexSet          A    B    C    0    0.0    0.0     0.0    0.0
+Ann2.vertices           A    B    C    0    0.0    0.0     0.0    0.0
 ```
+
+A = Algebra.Graph.Test.Bipartite.AdjacencyMap
+
+B = test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(647,27)-(682,28)
+
+C = Id
 
 We can see that the expression corresponding to `Ann2.connects` takes a huge
 amount of time to run. We could go a level deeper to see which of the
