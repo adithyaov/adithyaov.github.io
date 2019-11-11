@@ -378,17 +378,40 @@ size10 = mapSize (min 10)</code></pre>
     test &quot;Dioid&quot;    $ \(a :: PowerSet (Path Int)) b c -&gt; testDioid a b c
 ...</code></pre>
 <p>To:</p>
-<p>… putStrLn “============ PowerSet ============” test “Semiring” $ size10 $ (a :: PowerSet (Path Int)) b c -&gt; testSemiring a b c test “Dioid” $ size10 $ (a :: PowerSet (Path Int)) b c -&gt; testDioid a b c …</p>
-<pre><code>
-Consider the following changes to `testBipartiteAdjacencyMap`,
-
-From:
-</code></pre>
-<p>… putStrLn “============ Bipartite.AdjacencyMap.connects ============” test “connects [] == empty” $ connects [] == (empty :: BAII) test “connects [x] == x” $ (x :: BAII) -&gt; connects [x] == x test “connects [x, y] == connect x y” $ (x :: BAII) (y :: BAII) -&gt; connects [x, y] == connect x y test “connects xs == foldr connect empty xs” $ (xs :: [BAII]) -&gt; connects xs == foldr connect empty xs test “isEmpty (connects xs) == all isEmpty xs” $ (xs :: [BAII]) -&gt; isEmpty (connects xs) == all isEmpty xs …</p>
-<pre><code>
-To:
-</code></pre>
-<p>… putStrLn “============ Bipartite.AdjacencyMap.connects ============” test “connects [] == empty” $ connects [] == (empty :: BAII) test “connects [x] == x” $ (x :: BAII) -&gt; connects [x] == x test “connects [x, y] == connect x y” $ size10 $ (x :: BAII) (y :: BAII) -&gt; connects [x, y] == connect x y test “connects xs == foldr connect empty xs” $ size10 $ (xs :: [BAII]) -&gt; connects xs == foldr connect empty xs test “isEmpty (connects xs) == all isEmpty xs” $ (xs :: [BAII]) -&gt; isEmpty (connects xs) == all isEmpty xs … ```</p>
+<pre><code>...
+    putStrLn &quot;\n============ PowerSet ============&quot;
+    test &quot;Semiring&quot; $ size10 $ \(a :: PowerSet (Path Int)) b c -&gt; testSemiring a b c
+    test &quot;Dioid&quot;    $ size10 $ \(a :: PowerSet (Path Int)) b c -&gt; testDioid a b c
+...</code></pre>
+<p>Consider the following changes to <code>testBipartiteAdjacencyMap</code>,</p>
+<p>From:</p>
+<pre><code>...
+  putStrLn &quot;\n============ Bipartite.AdjacencyMap.connects ============&quot;
+  test &quot;connects []           == empty&quot; $
+        connects []           == (empty :: BAII)
+  test &quot;connects [x]          == x&quot; $ \(x :: BAII) -&gt;
+        connects [x]          == x
+  test &quot;connects [x, y]       == connect x y&quot; $ \(x :: BAII) (y :: BAII) -&gt;
+        connects [x, y]       == connect x y
+  test &quot;connects xs           == foldr connect empty xs&quot; $ \(xs :: [BAII]) -&gt;
+        connects xs           == foldr connect empty xs
+  test &quot;isEmpty (connects xs) == all isEmpty xs&quot; $ \(xs :: [BAII]) -&gt;
+        isEmpty (connects xs) == all isEmpty xs
+...</code></pre>
+<p>To:</p>
+<pre><code>...
+  putStrLn &quot;\n============ Bipartite.AdjacencyMap.connects ============&quot;
+  test &quot;connects []           == empty&quot; $
+        connects []           == (empty :: BAII)
+  test &quot;connects [x]          == x&quot; $ \(x :: BAII) -&gt;
+        connects [x]          == x
+  test &quot;connects [x, y]       == connect x y&quot; $ size10 $ \(x :: BAII) (y :: BAII) -&gt;
+        connects [x, y]       == connect x y
+  test &quot;connects xs           == foldr connect empty xs&quot; $ size10 $ \(xs :: [BAII]) -&gt;
+        connects xs           == foldr connect empty xs
+  test &quot;isEmpty (connects xs) == all isEmpty xs&quot; $ \(xs :: [BAII]) -&gt;
+        isEmpty (connects xs) == all isEmpty xs
+...</code></pre>
 <p>(Changed expression for <code>connect</code> and <code>connects</code>)</p>
 <p>These changes reduces the run time of the test suit to about 300 sec (5 min). That’s a 50% reduction!</p>
 <h3 id="automation">Automation?</h3>
