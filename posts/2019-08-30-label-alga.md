@@ -3,6 +3,9 @@ title: The Label Module
 category: alga pinned
 ---
 
+*NOTE*: This article is structured improperly which leads to confusion.
+I'll rewrite this article in the near future.  
+
 The initial plan for this post was to explain how the [Label][label]
 module worked in [Alga][alga] but instead I think it is easier to
 develop a mini version of the module from scratch. This would help
