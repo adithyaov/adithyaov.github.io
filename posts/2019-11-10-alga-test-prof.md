@@ -1,4 +1,3 @@
-
 ---
 title: Profiling Alga's test suite
 category: alga pinned
