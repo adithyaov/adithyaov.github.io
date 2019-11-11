@@ -4,6 +4,7 @@
 *.swo
 *.swp
 *~
+.ghc.environment.*
 .DS_Store
 TAGS
 dist

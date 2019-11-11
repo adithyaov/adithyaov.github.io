@@ -59,7 +59,8 @@
   </p>
 </blockquote>
 <div class="post">
-  <p>The initial plan for this post was to explain how the <a href="https://hackage.haskell.org/package/algebraic-graphs-0.4/docs/Algebra-Graph-Label.html">Label</a> module worked in <a href="https://hackage.haskell.org/package/algebraic-graphs-0.4">Alga</a> but instead I think it is easier to develop a mini version of the module from scratch. This would help in a deeper understanding of how the module is built.</p>
+  <p><em>NOTE</em>: This article is structured improperly which leads to confusion. I’ll rewrite this article in the near future.</p>
+<p>The initial plan for this post was to explain how the <a href="https://hackage.haskell.org/package/algebraic-graphs-0.4/docs/Algebra-Graph-Label.html">Label</a> module worked in <a href="https://hackage.haskell.org/package/algebraic-graphs-0.4">Alga</a> but instead I think it is easier to develop a mini version of the module from scratch. This would help in a deeper understanding of how the module is built.</p>
 <p>Before we dive into the creation of the module itself we will look at requirements of some basic <a href="https://en.wikipedia.org/wiki/Algebraic_structure">algebraic structures</a>. In particular we will look at the definition of <a href="https://en.wikipedia.org/wiki/Monoid">Monoid</a> and <a href="https://en.wikipedia.org/wiki/Semiring">Semiring</a>.</p>
 <h1 id="monoid">Monoid</h1>
 <p>A semiring is a set <code>S</code> equipped with a binary operation <code>&lt;&gt;</code> satisfying the following two axioms:</p>
