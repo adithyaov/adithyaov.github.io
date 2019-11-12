@@ -145,21 +145,24 @@ main = do
 <p>There is a lot of information in <code>test-alga.prof</code>. We are going to ignore most of it for now. We are only interested in <code>Ann.</code> expressions.</p>
 <pre><code>&gt; grep Ann\. test-alga.prog
 
- Ann.Acyclic.AdjacencyMap      Main    test/Main.hs:31:46-96      468   1    0.0    0.0     4.6    5.7
- Ann.AdjacencyIntMap           Main    test/Main.hs:32:46-92     1024   1    0.0    0.0     3.9    6.7
- Ann.AdjacencyMap              Main    test/Main.hs:33:46-89     1735   1    0.0    0.0     5.5    8.7
- Ann.Bipartite.AdjacencyMap    Main    test/Main.hs:34:46-98     2384   1    0.0    0.0    26.3   23.2
- Ann.Export                    Main    test/Main.hs:35:46-83     2711   1    0.0    0.0     0.1    0.2
- Ann.Graph                     Main    test/Main.hs:36:46-82     2968   1    0.0    0.0     1.9    3.0
- Ann.Internal                  Main    test/Main.hs:37:46-85     3919   1    0.0    0.0     0.0    0.0
- Ann.Label                     Main    test/Main.hs:38:46-82     4005   1    0.0    0.0    28.0   11.0
- Ann.Labelled.AdjacencyMap     Main    test/Main.hs:39:46-97     7821   1    0.0    0.0     3.7    5.2
- Ann.Labelled.Graph            Main    test/Main.hs:40:46-90     8468   1    0.0    0.0     0.9    1.0
- Ann.NonEmpty.AdjacencyMap     Main    test/Main.hs:41:46-97     9106   1    0.0    0.0     3.1    4.7
- Ann.NonEmpty.Graph            Main    test/Main.hs:42:46-90     9805   1    0.0    0.0     1.1    2.2
- Ann.Relation                  Main    test/Main.hs:43:46-85    10702   1    0.0    0.0     8.0   11.3
- Ann.Symmetric.Relation        Main    test/Main.hs:44:46-94    11480   1    0.0    0.0    12.7   16.8
- Ann.Typed                     Main    test/Main.hs:45:46-82    12133   1    0.0    0.0     0.3    0.5</code></pre>
+ Ann.Acyclic.AdjacencyMap      A   B   C   1    0.0    0.0     4.6    5.7
+ Ann.AdjacencyIntMap           A   B   C   1    0.0    0.0     3.9    6.7
+ Ann.AdjacencyMap              A   B   C   1    0.0    0.0     5.5    8.7
+ Ann.Bipartite.AdjacencyMap    A   B   C   1    0.0    0.0    26.3   23.2
+ Ann.Export                    A   B   C   1    0.0    0.0     0.1    0.2
+ Ann.Graph                     A   B   C   1    0.0    0.0     1.9    3.0
+ Ann.Internal                  A   B   C   1    0.0    0.0     0.0    0.0
+ Ann.Label                     A   B   C   1    0.0    0.0    28.0   11.0
+ Ann.Labelled.AdjacencyMap     A   B   C   1    0.0    0.0     3.7    5.2
+ Ann.Labelled.Graph            A   B   C   1    0.0    0.0     0.9    1.0
+ Ann.NonEmpty.AdjacencyMap     A   B   C   1    0.0    0.0     3.1    4.7
+ Ann.NonEmpty.Graph            A   B   C   1    0.0    0.0     1.1    2.2
+ Ann.Relation                  A   B   C   1    0.0    0.0     8.0   11.3
+ Ann.Symmetric.Relation        A   B   C   1    0.0    0.0    12.7   16.8
+ Ann.Typed                     A   B   C   1    0.0    0.0     0.3    0.5</code></pre>
+<p>A = Module Name</p>
+<p>B = Location of the expression</p>
+<p>C = Cost Center Id</p>
 <p>Let’s look into the last 2 parameters for now. The last parameter is the percentage of the total memory allocations (excluding profiling overheads) of the program made by this call and all of its sub-calls. The last but one parameter is percentage of the total run time of the program spent below this point in the call tree.</p>
 <p>If we were to sort these lines based on the last parameter we would see that the functions corresponding to <code>Ann.Label</code>, <code>Ann.Bipartite.AdjacencyMap</code> are very heavy. Both, together add up to over 55% of the total run time which is over 6 minutes. Now we know that <code>testLabel</code> and <code>testBipartiteAdjacencyMap</code> consume a lot of time.</p>
 <p>We will now add <code>SCC</code> annotations to expressions in those functions.</p>
@@ -167,9 +170,9 @@ main = do
 <pre><code>testLabel :: IO ()
 testLabel = do
     putStrLn &quot;\n============ Any ============&quot;
-    {-# SCC &quot;Any_Semiring&quot; #-}     test &quot;Semiring&quot;     $ \(a :: Any) b c -&gt; testSemiring a b c
-    {-# SCC &quot;Any_StarSemiring&quot; #-} test &quot;StarSemiring&quot; $ \(a :: Any) b c -&gt; testStarSemiring a b c
-    {-# SCC &quot;Any_Dioid&quot; #-}        test &quot;Dioid&quot;        $ \(a :: Any) b c -&gt; testDioid a b c
+    test &quot;Semiring&quot;     $ \(a :: Any) b c -&gt; testSemiring a b c
+    test &quot;StarSemiring&quot; $ \(a :: Any) b c -&gt; testStarSemiring a b c
+    test &quot;Dioid&quot;        $ \(a :: Any) b c -&gt; testDioid a b c
 
     putStrLn &quot;\n============ Distance ============&quot;
     test &quot;Semiring&quot;     $ \(a :: Distance Int) b c -&gt; testSemiring a b c
@@ -222,20 +225,23 @@ testLabel = do
 <p>This time we prefixed the text with <code>Ann1</code></p>
 <pre><code>&gt; grep Ann1\. test-alga.prog
 
-Ann1.Any_Dioid               Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:125:41-96     4550    1    0.0    0.0     0.0    0.0
-Ann1.Any_Semiring            Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:123:41-99     4006    1    0.0    0.0     0.0    0.0
-Ann1.Any_StarSemiring        Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:124:41-103    4265    1    0.0    0.0     0.0    0.0
-Ann1.Capacity_Dioid          Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:135:46-110    6137    1    0.0    0.0     0.0    0.0
-Ann1.Capacity_Semiring       Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:133:46-113    5601    1    0.0    0.0     0.0    0.0
-Ann1.Capacity_StarSemiring   Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:134:46-117    5873    1    0.0    0.0     0.0    0.0
-Ann1.Count_Semiring          Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:145:43-107    7285    1    0.0    0.0     0.0    0.0
-Ann1.Count_StarSemiring      Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:146:43-111    7557    1    0.0    0.0     0.0    0.0
-Ann1.Distance_Dioid          Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:130:46-110    5337    1    0.0    0.0     0.0    0.0
-Ann1.Distance_Semiring       Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:128:46-113    4801    1    0.0    0.0     0.0    0.0
-Ann1.Distance_StarSemiring   Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:129:46-117    5073    1    0.0    0.0     0.0    0.0
-Ann1.Minimum_LeftNearRing    Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:138:45-122    6401    1    0.0    0.0     0.0    0.0
-Ann1.PowerSet_Dioid          Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:142:42-113    7010    1    0.0    0.0    19.7    7.8
-Ann1.PowerSet_Semiring       Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:141:42-116    6712    1    0.0    0.0    21.8    7.5</code></pre>
+Ann1.Any_Dioid               A   B   C    1    0.0    0.0     0.0    0.0
+Ann1.Any_Semiring            A   B   C    1    0.0    0.0     0.0    0.0
+Ann1.Any_StarSemiring        A   B   C    1    0.0    0.0     0.0    0.0
+Ann1.Capacity_Dioid          A   B   C    1    0.0    0.0     0.0    0.0
+Ann1.Capacity_Semiring       A   B   C    1    0.0    0.0     0.0    0.0
+Ann1.Capacity_StarSemiring   A   B   C    1    0.0    0.0     0.0    0.0
+Ann1.Count_Semiring          A   B   C    1    0.0    0.0     0.0    0.0
+Ann1.Count_StarSemiring      A   B   C    1    0.0    0.0     0.0    0.0
+Ann1.Distance_Dioid          A   B   C    1    0.0    0.0     0.0    0.0
+Ann1.Distance_Semiring       A   B   C    1    0.0    0.0     0.0    0.0
+Ann1.Distance_StarSemiring   A   B   C    1    0.0    0.0     0.0    0.0
+Ann1.Minimum_LeftNearRing    A   B   C    1    0.0    0.0     0.0    0.0
+Ann1.PowerSet_Dioid          A   B   C    1    0.0    0.0    19.7    7.8
+Ann1.PowerSet_Semiring       A   B   C    1    0.0    0.0    21.8    7.5</code></pre>
+<p>A = Module Name</p>
+<p>B = Location of the expression</p>
+<p>C = Cost Center Id</p>
 <p>If we were to sort these lines based on the last parameter we would see that the functions corresponding to <code>Ann1.PowerSet_Semiring</code> and <code>Ann1.PowerSet_Dioid</code> are very heavy. Please note that the readings may be different since the test cases are generated randomly. In this case to reduce the runtime, we will choose to control the random test cases generated. We could choose to use smaller <code>PowerSet</code> or lesser number of cases.</p>
 <p><code>testLabel</code> is a less than 20 lines long and hence it is easy for us to add <code>SCC</code> annotations to almost every expression. On the other hand <code>testBipartiteAdjacencyMap</code> is over 750 lines long. It becomes very difficult to add annotations to every expression when profiling huge files. We will group a set of expressions and add an annotation to the combined expression.</p>
 <p>For example, this:</p>
@@ -361,15 +367,15 @@ Ann2.vertexCount        A    B    C    0    0.0    0.0     0.0    0.0
 Ann2.vertexList         A    B    C    0    0.0    0.0     0.0    0.0
 Ann2.vertexSet          A    B    C    0    0.0    0.0     0.0    0.0
 Ann2.vertices           A    B    C    0    0.0    0.0     0.0    0.0</code></pre>
-<p>A = Algebra.Graph.Test.Bipartite.AdjacencyMap</p>
-<p>B = test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(647,27)-(682,28)</p>
-<p>C = Id</p>
+<p>A = Module Name</p>
+<p>B = Location of the expression</p>
+<p>C = Cost Center Id</p>
 <p>We can see that the expression corresponding to <code>Ann2.connects</code> takes a huge amount of time to run. We could go a level deeper to see which of the expression in the set of expressions takes longer. But we have concluded that <code>connects</code> is a heavy operation.</p>
-<p>In this case we are working with pure functions and hence there is no memory leak. In some cases the function implementation can be improved, but in this case it is no possible. The efficiency of <code>connects</code> directly correlates with the efficiency of operations in the <code>Data.Map</code> module. This is the same case for <code>Semiring</code> and <code>Dioid</code> instance of <code>PowerSet</code>. One way we can run the tests faster is to reduce the test size, that is, either use smaller test elements or decrease the number of test cases. We will be using the second method.</p>
+<p>In this case we are working with pure functions and hence there is no memory leak. In some cases the function implementation can be improved, but in this case it is no possible. The efficiency of <code>connects</code> directly correlates with the efficiency of operations in the <code>Data.Map</code> module. This is the same case for <code>Semiring</code> and <code>Dioid</code> instance of <code>PowerSet</code>. One way we can run the tests faster is to reduce the test size, that is, either use smaller test elements or decrease the number of test cases. We will be using the first method.</p>
 <p>Consider,</p>
 <pre><code>size10 :: Testable prop =&gt; prop -&gt; Property
 size10 = mapSize (min 10)</code></pre>
-<p>This function basically reduces the number of test cases to a maximum of 10.</p>
+<p>This function basically reduces the size of test cases.</p>
 <p>Consider the following changes to <code>testLabel</code>,</p>
 <p>From:</p>
 <pre><code>...
