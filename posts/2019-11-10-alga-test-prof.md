@@ -127,22 +127,28 @@ of it for now. We are only interested in `Ann.` expressions.
 ```
 > grep Ann\. test-alga.prog
 
- Ann.Acyclic.AdjacencyMap      Main    test/Main.hs:31:46-96      468   1    0.0    0.0     4.6    5.7
- Ann.AdjacencyIntMap           Main    test/Main.hs:32:46-92     1024   1    0.0    0.0     3.9    6.7
- Ann.AdjacencyMap              Main    test/Main.hs:33:46-89     1735   1    0.0    0.0     5.5    8.7
- Ann.Bipartite.AdjacencyMap    Main    test/Main.hs:34:46-98     2384   1    0.0    0.0    26.3   23.2
- Ann.Export                    Main    test/Main.hs:35:46-83     2711   1    0.0    0.0     0.1    0.2
- Ann.Graph                     Main    test/Main.hs:36:46-82     2968   1    0.0    0.0     1.9    3.0
- Ann.Internal                  Main    test/Main.hs:37:46-85     3919   1    0.0    0.0     0.0    0.0
- Ann.Label                     Main    test/Main.hs:38:46-82     4005   1    0.0    0.0    28.0   11.0
- Ann.Labelled.AdjacencyMap     Main    test/Main.hs:39:46-97     7821   1    0.0    0.0     3.7    5.2
- Ann.Labelled.Graph            Main    test/Main.hs:40:46-90     8468   1    0.0    0.0     0.9    1.0
- Ann.NonEmpty.AdjacencyMap     Main    test/Main.hs:41:46-97     9106   1    0.0    0.0     3.1    4.7
- Ann.NonEmpty.Graph            Main    test/Main.hs:42:46-90     9805   1    0.0    0.0     1.1    2.2
- Ann.Relation                  Main    test/Main.hs:43:46-85    10702   1    0.0    0.0     8.0   11.3
- Ann.Symmetric.Relation        Main    test/Main.hs:44:46-94    11480   1    0.0    0.0    12.7   16.8
- Ann.Typed                     Main    test/Main.hs:45:46-82    12133   1    0.0    0.0     0.3    0.5
+ Ann.Acyclic.AdjacencyMap      A   B   C   1    0.0    0.0     4.6    5.7
+ Ann.AdjacencyIntMap           A   B   C   1    0.0    0.0     3.9    6.7
+ Ann.AdjacencyMap              A   B   C   1    0.0    0.0     5.5    8.7
+ Ann.Bipartite.AdjacencyMap    A   B   C   1    0.0    0.0    26.3   23.2
+ Ann.Export                    A   B   C   1    0.0    0.0     0.1    0.2
+ Ann.Graph                     A   B   C   1    0.0    0.0     1.9    3.0
+ Ann.Internal                  A   B   C   1    0.0    0.0     0.0    0.0
+ Ann.Label                     A   B   C   1    0.0    0.0    28.0   11.0
+ Ann.Labelled.AdjacencyMap     A   B   C   1    0.0    0.0     3.7    5.2
+ Ann.Labelled.Graph            A   B   C   1    0.0    0.0     0.9    1.0
+ Ann.NonEmpty.AdjacencyMap     A   B   C   1    0.0    0.0     3.1    4.7
+ Ann.NonEmpty.Graph            A   B   C   1    0.0    0.0     1.1    2.2
+ Ann.Relation                  A   B   C   1    0.0    0.0     8.0   11.3
+ Ann.Symmetric.Relation        A   B   C   1    0.0    0.0    12.7   16.8
+ Ann.Typed                     A   B   C   1    0.0    0.0     0.3    0.5
 ```
+
+A = Module Name
+
+B = Location of the expression
+
+C = Cost Center Id
 
 Let's look into the last 2 parameters for now.  The last parameter is the
 percentage of the total memory allocations (excluding profiling overheads) of
@@ -164,9 +170,9 @@ We will now add `SCC` annotations to expressions in those functions.
 testLabel :: IO ()
 testLabel = do
     putStrLn "\n============ Any ============"
-    {-# SCC "Any_Semiring" #-}     test "Semiring"     $ \(a :: Any) b c -> testSemiring a b c
-    {-# SCC "Any_StarSemiring" #-} test "StarSemiring" $ \(a :: Any) b c -> testStarSemiring a b c
-    {-# SCC "Any_Dioid" #-}        test "Dioid"        $ \(a :: Any) b c -> testDioid a b c
+    test "Semiring"     $ \(a :: Any) b c -> testSemiring a b c
+    test "StarSemiring" $ \(a :: Any) b c -> testStarSemiring a b c
+    test "Dioid"        $ \(a :: Any) b c -> testDioid a b c
 
     putStrLn "\n============ Distance ============"
     test "Semiring"     $ \(a :: Distance Int) b c -> testSemiring a b c
@@ -227,21 +233,27 @@ This time we prefixed the text with `Ann1`
 ```
 > grep Ann1\. test-alga.prog
 
-Ann1.Any_Dioid               Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:125:41-96     4550    1    0.0    0.0     0.0    0.0
-Ann1.Any_Semiring            Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:123:41-99     4006    1    0.0    0.0     0.0    0.0
-Ann1.Any_StarSemiring        Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:124:41-103    4265    1    0.0    0.0     0.0    0.0
-Ann1.Capacity_Dioid          Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:135:46-110    6137    1    0.0    0.0     0.0    0.0
-Ann1.Capacity_Semiring       Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:133:46-113    5601    1    0.0    0.0     0.0    0.0
-Ann1.Capacity_StarSemiring   Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:134:46-117    5873    1    0.0    0.0     0.0    0.0
-Ann1.Count_Semiring          Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:145:43-107    7285    1    0.0    0.0     0.0    0.0
-Ann1.Count_StarSemiring      Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:146:43-111    7557    1    0.0    0.0     0.0    0.0
-Ann1.Distance_Dioid          Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:130:46-110    5337    1    0.0    0.0     0.0    0.0
-Ann1.Distance_Semiring       Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:128:46-113    4801    1    0.0    0.0     0.0    0.0
-Ann1.Distance_StarSemiring   Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:129:46-117    5073    1    0.0    0.0     0.0    0.0
-Ann1.Minimum_LeftNearRing    Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:138:45-122    6401    1    0.0    0.0     0.0    0.0
-Ann1.PowerSet_Dioid          Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:142:42-113    7010    1    0.0    0.0    19.7    7.8
-Ann1.PowerSet_Semiring       Algebra.Graph.Test.Label    test/Algebra/Graph/Test/Label.hs:141:42-116    6712    1    0.0    0.0    21.8    7.5
+Ann1.Any_Dioid               A   B   C    1    0.0    0.0     0.0    0.0
+Ann1.Any_Semiring            A   B   C    1    0.0    0.0     0.0    0.0
+Ann1.Any_StarSemiring        A   B   C    1    0.0    0.0     0.0    0.0
+Ann1.Capacity_Dioid          A   B   C    1    0.0    0.0     0.0    0.0
+Ann1.Capacity_Semiring       A   B   C    1    0.0    0.0     0.0    0.0
+Ann1.Capacity_StarSemiring   A   B   C    1    0.0    0.0     0.0    0.0
+Ann1.Count_Semiring          A   B   C    1    0.0    0.0     0.0    0.0
+Ann1.Count_StarSemiring      A   B   C    1    0.0    0.0     0.0    0.0
+Ann1.Distance_Dioid          A   B   C    1    0.0    0.0     0.0    0.0
+Ann1.Distance_Semiring       A   B   C    1    0.0    0.0     0.0    0.0
+Ann1.Distance_StarSemiring   A   B   C    1    0.0    0.0     0.0    0.0
+Ann1.Minimum_LeftNearRing    A   B   C    1    0.0    0.0     0.0    0.0
+Ann1.PowerSet_Dioid          A   B   C    1    0.0    0.0    19.7    7.8
+Ann1.PowerSet_Semiring       A   B   C    1    0.0    0.0    21.8    7.5
 ```
+
+A = Module Name
+
+B = Location of the expression
+
+C = Cost Center Id
 
 If we were to sort these lines based on the last parameter we would see that
 the functions corresponding to `Ann1.PowerSet_Semiring` and
@@ -404,11 +416,11 @@ Ann2.vertexSet          A    B    C    0    0.0    0.0     0.0    0.0
 Ann2.vertices           A    B    C    0    0.0    0.0     0.0    0.0
 ```
 
-A = Algebra.Graph.Test.Bipartite.AdjacencyMap
+A = Module Name
 
-B = test/Algebra/Graph/Test/Bipartite/AdjacencyMap.hs:(647,27)-(682,28)
+B = Location of the expression
 
-C = Id
+C = Cost Center Id
 
 We can see that the expression corresponding to `Ann2.connects` takes a huge
 amount of time to run. We could go a level deeper to see which of the
@@ -421,7 +433,7 @@ case it is no possible. The efficiency of `connects` directly correlates with
 the efficiency of operations in the `Data.Map` module. This is the same case
 for `Semiring` and `Dioid` instance of `PowerSet`. One way we can run the tests
 faster is to reduce the test size, that is, either use smaller test elements or
-decrease the number of test cases. We will be using the second method.
+decrease the number of test cases. We will be using the first method.
 
 Consider,
 
@@ -430,7 +442,7 @@ size10 :: Testable prop => prop -> Property
 size10 = mapSize (min 10)
 ```
 
-This function basically reduces the number of test cases to a maximum of 10.
+This function basically reduces the size of test cases.
 
 Consider the following changes to `testLabel`,
 
