@@ -20,22 +20,22 @@
             },
             "tags": [
             ],
-            "date_published": "2020-07-16T15:22:44+05:30",
-            "date_modified": "2020-07-16T15:22:44+05:30"
+            "date_published": "2020-07-16T15:31:54+05:30",
+            "date_modified": "2020-07-16T15:31:54+05:30"
         },
         {
             "id": "https://adithyaov.github.io/about-me/",
             "url": "https://adithyaov.github.io/about-me/",
             "title": "About me",
-            "summary": "Hi, I’m Adithya. I currently work for a company called Composewell where I build tooling around the Haskell ecosystem. Before that, I studied Computer Science at Indian Institute of Technology, Palakkad. I am interested in Functional programming and Mathematics, hence I have a natural predilection&hellip;",
-            "content_html": "<p>Hi, I’m Adithya. I currently work for a company called Composewell where I build tooling around the Haskell ecosystem. Before that, I studied Computer Science at <a href=\"https://iitpkd.ac.in/\">Indian Institute of Technology, Palakkad</a>.</p>\n<p>I am interested in Functional programming and Mathematics, hence I have a natural predilection towards Haskell. I contribute to the Open Source community whenever possible. I use Emacs for almost everything and prefer Z shell (with oh-my-zsh) over Bash.</p>\n<p>Apart from that, I regularly play chess, although I’m not very good at it.</p>\n<h1 id=\"research-interests\">Research Interests</h1>\n<p>My researches interests mostly lie in the field of math and programming languages. They include <em>Cryptography</em>, <em>Category Theory</em>, <em>Type Theory</em> and <em>Proof Assistants</em>.</p>\n<h1 id=\"contact-details\">Contact Details</h1>\n<ul>\n<li>Email: <a href=\"mailto:adi.obilisetty@gmail.com\">adi.obilisetty@gmail.com</a></li>\n<li>Github: <a href=\"https://github.com/adithyaov\">github.com/adithyaov</a></li>\n</ul>\n",
+            "summary": "Hi, I’m Adithya. I currently work for a company called Composewell where I build tooling surrounding the Haskell ecosystem. Before that, I studied Computer Science at Indian Institute of Technology, Palakkad. I am interested in Functional programming and Mathematics, hence I have a natural predilection&hellip;",
+            "content_html": "<p>Hi, I’m Adithya. I currently work for a company called Composewell where I build tooling surrounding the Haskell ecosystem. Before that, I studied Computer Science at <a href=\"https://iitpkd.ac.in/\">Indian Institute of Technology, Palakkad</a>.</p>\n<p>I am interested in Functional programming and Mathematics, hence I have a natural predilection towards Haskell. I contribute to the Open Source community whenever possible. I use Emacs for almost everything and prefer Z shell (with oh-my-zsh) over Bash.</p>\n<p>Apart from that, I regularly play chess, although I’m not very good at it.</p>\n<h1 id=\"research-interests\">Research Interests</h1>\n<p>My researches interests mostly lie in the field of math and programming languages. They include <em>Cryptography</em>, <em>Category Theory</em>, <em>Type Theory</em> and <em>Proof Assistants</em>. </p>\n<p>If you’d like to work with me or ask me something, please don’t hesitate to mail me at <a href=\"mailto:adi.obilisetty@gmail.com\">adi.obilisetty@gmail.com</a></p>\n",
             "author": {
                 "name": "Adithya Obilisetty"
             },
             "tags": [
             ],
-            "date_published": "2020-07-16T15:22:44+05:30",
-            "date_modified": "2020-07-16T15:22:44+05:30"
+            "date_published": "2020-07-16T15:31:54+05:30",
+            "date_modified": "2020-07-16T15:31:54+05:30"
         }
     ]
 }

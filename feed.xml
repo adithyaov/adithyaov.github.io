@@ -17,7 +17,7 @@
         <link href="https://adithyaov.github.io/experimenting-with-acyclic-graphs-in-alga/"/>
         <id>https://adithyaov.github.io/experimenting-with-acyclic-graphs-in-alga/</id>
 
-        <updated>2020-07-16T15:22:44+05:30</updated>
+        <updated>2020-07-16T15:31:54+05:30</updated>
             <summary>
                 <![CDATA[
                     Alga is a library for algebraic construction and manipulation of graphs in Haskell. Seethis Haskell Symposium paper and thecorresponding talk for the motivationbehind the library, the underlying theory and implementation details. There is also aHaskell eXchange talk, and a tutorial by Alexandre Moine.Please visit the&hellip;
@@ -133,24 +133,20 @@ module and many other functions completely.</p>
         <link href="https://adithyaov.github.io/about-me/"/>
         <id>https://adithyaov.github.io/about-me/</id>
 
-        <updated>2020-07-16T15:22:44+05:30</updated>
+        <updated>2020-07-16T15:31:54+05:30</updated>
             <summary>
                 <![CDATA[
-                    Hi, I’m Adithya. I currently work for a company called Composewell where I build tooling around the Haskell ecosystem. Before that, I studied Computer Science at Indian Institute of Technology, Palakkad. I am interested in Functional programming and Mathematics, hence I have a natural predilection&hellip;
+                    Hi, I’m Adithya. I currently work for a company called Composewell where I build tooling surrounding the Haskell ecosystem. Before that, I studied Computer Science at Indian Institute of Technology, Palakkad. I am interested in Functional programming and Mathematics, hence I have a natural predilection&hellip;
                 ]]>
             </summary>
         <content type="html">
             <![CDATA[
-                <p>Hi, I’m Adithya. I currently work for a company called Composewell where I build tooling around the Haskell ecosystem. Before that, I studied Computer Science at <a href="https://iitpkd.ac.in/">Indian Institute of Technology, Palakkad</a>.</p>
+                <p>Hi, I’m Adithya. I currently work for a company called Composewell where I build tooling surrounding the Haskell ecosystem. Before that, I studied Computer Science at <a href="https://iitpkd.ac.in/">Indian Institute of Technology, Palakkad</a>.</p>
 <p>I am interested in Functional programming and Mathematics, hence I have a natural predilection towards Haskell. I contribute to the Open Source community whenever possible. I use Emacs for almost everything and prefer Z shell (with oh-my-zsh) over Bash.</p>
 <p>Apart from that, I regularly play chess, although I’m not very good at it.</p>
 <h1 id="research-interests">Research Interests</h1>
-<p>My researches interests mostly lie in the field of math and programming languages. They include <em>Cryptography</em>, <em>Category Theory</em>, <em>Type Theory</em> and <em>Proof Assistants</em>.</p>
-<h1 id="contact-details">Contact Details</h1>
-<ul>
-<li>Email: <a href="mailto:adi.obilisetty@gmail.com">adi.obilisetty@gmail.com</a></li>
-<li>Github: <a href="https://github.com/adithyaov">github.com/adithyaov</a></li>
-</ul>
+<p>My researches interests mostly lie in the field of math and programming languages. They include <em>Cryptography</em>, <em>Category Theory</em>, <em>Type Theory</em> and <em>Proof Assistants</em>. </p>
+<p>If you’d like to work with me or ask me something, please don’t hesitate to mail me at <a href="mailto:adi.obilisetty@gmail.com">adi.obilisetty@gmail.com</a></p>
 
             ]]>
         </content>
