@@ -10,14 +10,14 @@
     <id>https://adithyaov.github.io</id>
 
     <entry>
-        <title>Experimenting with acyclic graphs in Alga</title>
+        <title>Acyclic graphs in Alga</title>
         <author>
             <name>Adithya Obilisetty</name>
         </author>
         <link href="https://adithyaov.github.io/experimenting-with-acyclic-graphs-in-alga/"/>
         <id>https://adithyaov.github.io/experimenting-with-acyclic-graphs-in-alga/</id>
 
-        <updated>2020-07-16T15:19:24+05:30</updated>
+        <updated>2020-07-16T15:22:44+05:30</updated>
             <summary>
                 <![CDATA[
                     Alga is a library for algebraic construction and manipulation of graphs in Haskell. Seethis Haskell Symposium paper and thecorresponding talk for the motivationbehind the library, the underlying theory and implementation details. There is also aHaskell eXchange talk, and a tutorial by Alexandre Moine.Please visit the&hellip;
@@ -133,7 +133,7 @@ module and many other functions completely.</p>
         <link href="https://adithyaov.github.io/about-me/"/>
         <id>https://adithyaov.github.io/about-me/</id>
 
-        <updated>2020-07-16T15:19:24+05:30</updated>
+        <updated>2020-07-16T15:22:44+05:30</updated>
             <summary>
                 <![CDATA[
                     Hi, I’m Adithya. I currently work for a company called Composewell where I build tooling around the Haskell ecosystem. Before that, I studied Computer Science at Indian Institute of Technology, Palakkad. I am interested in Functional programming and Mathematics, hence I have a natural predilection&hellip;
