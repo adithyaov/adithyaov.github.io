@@ -52,7 +52,9 @@ Commit script:
           msg="$*"
   fi
   git commit -m "$msg"
-  git push origin master &
+#+END_SRC
+#+BEGIN_SRC elisp :results silent
+  (magit-git-push "master" "" "")
 #+END_SRC
 
 
