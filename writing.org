@@ -45,6 +45,8 @@ Commit script:
   # Add changes to git.
   git add .
 
+  rm -rf public
+
   # Commit changes.
   msg="rebuilding site $(date)"
   if [ -n "$*" ]; then
