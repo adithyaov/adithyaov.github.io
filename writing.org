@@ -53,9 +53,6 @@ Commit script:
   fi
   git commit -m "$msg"
 #+END_SRC
-#+BEGIN_SRC elisp :results silent
-  (magit-git-push "master" "" "")
-#+END_SRC
 
 
 * Index
