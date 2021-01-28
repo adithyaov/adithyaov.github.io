@@ -25,15 +25,15 @@ Commit script:
   # If a command fails then the deploy stops
   set -e
 
-  printf "\033[0;32mMove public/ to docs/\033[0m\n"
-
-  rm -rf docs
-
   printf "\033[0;32mDeploying updates to GitHub...\033[0m\n"
+
+  # Remove the default docs
+  rm -rf docs
 
   # Build the project.
   hugo # if using a theme, replace with `hugo`
 
+  # Move public to docs.
   mv public docs
 
   # Add source of truth
