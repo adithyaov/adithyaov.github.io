@@ -28,12 +28,13 @@ Commit script:
   printf "\033[0;32mMove public/ to docs/\033[0m\n"
 
   rm -rf docs
-  mv public docs
 
   printf "\033[0;32mDeploying updates to GitHub...\033[0m\n"
 
   # Build the project.
   hugo # if using a theme, replace with `hugo`
+
+  mv public docs
 
   # Add source of truth
   git add writing.org
@@ -44,8 +45,6 @@ Commit script:
 
   # Add changes to git.
   git add .
-
-  rm -rf public
 
   # Commit changes.
   msg="rebuilding site $(date)"
