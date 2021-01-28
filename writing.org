@@ -51,6 +51,7 @@ Commit script:
           msg="$*"
   fi
   git commit -m "$msg"
+  git push -f origin master
 #+END_SRC
 
 
