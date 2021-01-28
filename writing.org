@@ -1,0 +1,178 @@
+#+HUGO_BASE_DIR: ./
+#+HUGO_SECTION: ./
+#+TITLE: Source for Hugo
+
+The only way to learn something properly is to paraphrase the understanding.
+This file is a compilation of my effort on understanding interesting concepts.
+
+Hugo theme: https://github.com/jakewies/hugo-theme-codex
+
+* Index
+  :PROPERTIES:
+  :EXPORT_FILE_NAME: _index
+  :EXPORT_HUGO_CUSTOM_FRONT_MATTER: :heading "Hi, I'm Adithya" :subheading "Food + Functional programming" :handle "adithyaov"
+  :END:
+
+* Writing
+ :PROPERTIES:
+ :EXPORT_FILE_NAME: _index
+ :EXPORT_HUGO_SECTION: posts
+ :EXPORT_HUGO_MENU: :menu "main"
+ :END:
+
+
+* Design: Direct style parsers in streamly                         :streamly:
+  :PROPERTIES:
+  :EXPORT_FILE_NAME: direct-parser-design
+  :EXPORT_HUGO_SECTION: posts
+  :EXPORT_DATE: 2021-01-28
+  :END:
+
+  #+BEGIN_EXPORT html
+  <style>
+    .language-haskell {
+      color: #fff!important;
+    }
+  </style>
+  #+END_EXPORT
+
+  The following article briefly describes the design of direct style parsers in
+  streamly. We won't bother with the implementation details but rather will try
+  to see what a parser is.
+
+** Design
+
+  The design of parsers is inspired by the design of terminating folds. Extend
+  terminating folds with backtracing and error handling and voila, you get a
+  parser.
+
+  A complete parsing workflow consists of the parser itself and driver that
+  uses the parser on an input stream.
+
+  A parser is a set of expressive instructions with a private (internal) state
+  that the driver works with. The parser should be designed to answer all the
+  questions the driver can potentially ask.
+
+  The driver can ask the following questions to the parser,
+  1. Can I read the next element from the input stream? If not, should I
+     consider this parse as a success or a failure?
+  2. Given an input element, how do I fold it into your internal state? Once
+     folded, should I backtrack and continue parsing, or terminate? If I should
+     terminate is it a success or a failed parse?
+  3. Does your internal state indicate a successful or a failed parse?
+
+*** FAQ
+
+    *Why does the driver need to ask 1? Why not just read the element and
+    backtrack if it isn't required?*
+
+    1. If the parser does not need to consume an element it would be an
+       erroneous behavior to consume it.
+    2. The input stream may never yield an input in which case the parser keeps
+       waiting.
+
+    *Why does the driver need to ask 2?*
+
+    Well, that's the parser logic. A parser isn't much of a parser without 2.
+
+    *Why does the driver need to ask 3? 2 already tells the driver whether to
+    terminate successfully or fail?*
+
+    The driver needs to know what to do when the input stream has no more
+    elements and the parser has not terminated.
+
+** Code correspondence
+
+   The following is how the parser is defined in streamly,
+
+   #+BEGIN_SRC haskell
+     data Step s b
+         = Partial Int s
+         | Continue Int s
+         | Done Int b
+         | Error String
+
+     data Initial s b
+         = IPartial s
+         | IDone b
+         | IError String
+
+     type Extract b = Either String b
+
+     data Parser m a b =
+         forall s. Parser
+                       (s -> a -> m (Step s b))
+                       (m (Initial s b))
+                       (s -> m (Extract b))
+   #+END_SRC
+
+   The structure above is expressive enough to answer all the questions
+   the driver can ask.
+
+   =Initial=, along with wrapping the internal state of the parser, instructs
+   the driver whether it should read the next element or terminate. =IDone=
+   indicates successful termination whereas =IError= indicates a failed one.
+
+   The step function tells the driver how the element should be folded with a
+   previous state. The return type of the step function =Step=, along with
+   encapsulating the new state, instructs the parser whether to backtrack and
+   continue or terminate. =Done= and =Error= correspond to successful and failed
+   termination states.
+
+   =Extract= expresses whether the internal state at the current moment
+   indicates a successful or a failed parse, conveniently encoded by =Either=.
+
+** Driver workflow
+
+   At this point, the workflow of the driver is rather straight
+   forward. Regardless of how a driver is implemented the driver does the
+   following,
+
+   1. Ask the parser whether to read the next element of the input stream,
+     - Yes -> Jump to *2*
+     - No -> Jump to *4*
+
+   2. Try reading the next element,
+      - Element is available -> Jump to *3*
+      - Stream has ended -> Jump to *4*
+
+   3. Read the element, fold it, and ask the parser what to do next,
+      - Terminate -> Jump to *4*
+      - Backtrack and continue -> Backtracka nd jump to *1*
+
+   4. Check if the parse termination state
+      - Successful -> End parsing as a success
+      - Failure -> End parsing with a failure
+
+** Closing statements
+
+   Streamly is ever-evolving and parsers are going to evolve with the
+   library. There are a lot of plans to make parsers more expressive and
+   efficient. Although this guide might become obsolete within the next few
+   releases of streamly, the ideas will remain the same. Quoting V, Ideas are
+   bulletproof.
+
+
+* TODO Quadratic complexity of direct style composition
+
+
+* TODO Partial vs Continue
+
+  Having =Partial= gives the parser more expressivity. =Partial= puts the parser
+  in a success state. Once we reach =Partial= we never go back to =Continue=. We
+  also drop the additional buffer when =Partial= is reached. One can replace
+  =Partial= with =Continue= and the code will still be correct but less
+  performant.
+
+
+* TODO Buffering in parsers
+
+  Without much digression, let me state that buffering of the input stream for
+  backtracking is currently handeled by the driver. We could potentially move
+  the implementation of buffering to the parser itself but there are [pros and
+  cons for either case].
+
+
+* TODO Kontinuation style parsing
+
+* TODO Lazy functinal state threads
