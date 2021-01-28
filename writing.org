@@ -53,6 +53,9 @@ Commit script:
   fi
   git commit -m "$msg"
 #+END_SRC
+#+BEGIN_SRC elisp :results silent
+  (magit-push-current-to-pushremote)
+#+END_SRC
 
 
 * Index
