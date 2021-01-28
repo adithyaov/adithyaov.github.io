@@ -54,7 +54,7 @@ Commit script:
   git commit -m "$msg"
 #+END_SRC
 #+BEGIN_SRC elisp :results silent
-  (magit-push-current-to-pushremote)
+  (magit-push-current-to-pushremote "origin")
 #+END_SRC
 
 
