@@ -40,7 +40,7 @@ Commit script:
   git commit -m "Updated source of truth"
 
   # Go To Public folder
-  cd public
+  cd docs
 
   # Add changes to git.
   git add .
