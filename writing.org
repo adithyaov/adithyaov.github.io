@@ -4,7 +4,7 @@
 
 Boot
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :results silent
   (org-babel-do-load-languages 'org-babel-load-languages '((shell . t)))
 #+END_SRC
 
@@ -14,12 +14,12 @@ This file is a compilation of my effort on understanding interesting concepts.
 Hugo theme: https://github.com/jakewies/hugo-theme-codex
 
 Add theme:
-#+BEGIN_SRC sh
+#+BEGIN_SRC sh :results silent
   git clone https://github.com/jakewies/hugo-theme-codex.git themes/hugo-theme-codex
 #+END_SRC
 
-Deployment:
-#+BEGIN_SRC sh
+Commit script:
+#+BEGIN_SRC sh :results silent
   #!/bin/sh
 
   # If a command fails then the deploy stops
@@ -46,10 +46,8 @@ Deployment:
           msg="$*"
   fi
   git commit -m "$msg"
-
-  # Push source and build repos.
-  git push origin master
 #+END_SRC
+
 
 * Index
   :PROPERTIES:
