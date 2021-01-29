@@ -225,3 +225,11 @@ Commit script:
 * TODO Kontinuation style parsing
 
 * TODO Lazy functinal state threads
+
+
+
+* Local variables
+
+# Local Variables:
+# eval: (org-hugo-auto-export-mode)
+# End:
