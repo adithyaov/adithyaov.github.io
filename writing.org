@@ -35,11 +35,8 @@ Commit script:
   git add writing.org
   git commit -m "Updated source of truth"
 
-  # Go To Public folder
-  cd docs
-
   # Add changes to git.
-  git add .
+  git add docs/.
 
   # Commit changes.
   msg="rebuilding site $(date)"
@@ -47,6 +44,8 @@ Commit script:
           msg="$*"
   fi
   git commit -m "$msg"
+
+  git push origin master
 #+END_SRC
 
 * Index
