@@ -1,0 +1,10 @@
+baseUrl = "https://adithyaov.github.io"
+languageCode = "en-us"
+title = "Adithya"
+theme = "hugo-theme-codex"
+
+[params]
+  github = "https://github.com/adithyaov"
+
+[markup.goldmark.renderer]
+  unsafe= true
