@@ -44,8 +44,6 @@ Commit script:
           msg="$*"
   fi
   git commit -m "$msg"
-
-  git push origin master
 #+END_SRC
 
 * Index
