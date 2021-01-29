@@ -38,12 +38,8 @@ Commit script:
   # Add changes to git.
   git add docs/.
 
-  # Commit changes.
-  msg="rebuilding site $(date)"
-  if [ -n "$*" ]; then
-          msg="$*"
-  fi
-  git commit -m "$msg"
+  git commit -m "Adding docs to site"
+
 #+END_SRC
 
 * Index
