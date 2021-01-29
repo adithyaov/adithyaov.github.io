@@ -27,8 +27,9 @@ Commit script:
 
   printf "\033[0;32mDeploying updates to GitHub...\033[0m\n"
 
-  # Remove the default docs
+  # Remove the default stuff
   rm -rf docs
+  rm -rf public
 
   # Build the project.
   hugo # if using a theme, replace with `hugo`
@@ -53,21 +54,18 @@ Commit script:
   fi
   git commit -m "$msg"
 #+END_SRC
-#+BEGIN_SRC elisp :results silent
-  (magit-push-current-to-pushremote "master")
-#+END_SRC
-
 
 * Index
   :PROPERTIES:
   :EXPORT_FILE_NAME: _index
+  :EXPORT_HUGO_MENU: :menu "main"
   :EXPORT_HUGO_CUSTOM_FRONT_MATTER: :heading "Hi, I'm Adithya" :subheading "Food + Functional programming" :handle "adithyaov"
   :END:
 
 * Writing
  :PROPERTIES:
  :EXPORT_FILE_NAME: _index
- :EXPORT_HUGO_SECTION: posts
+ :EXPORT_HUGO_SECTION: blog
  :EXPORT_HUGO_MENU: :menu "main"
  :END:
 
@@ -75,7 +73,7 @@ Commit script:
 * Design: Direct style parsers in streamly                         :streamly:
   :PROPERTIES:
   :EXPORT_FILE_NAME: direct-parser-design
-  :EXPORT_HUGO_SECTION: posts
+  :EXPORT_HUGO_SECTION: blog
   :EXPORT_DATE: 2021-01-28
   :END:
 
