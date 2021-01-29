@@ -38,7 +38,7 @@ Commit script:
   # Add changes to git.
   git add docs/.
 
-  git commit -m "Adding docs to site"
+  git commit -m "Sync docs into site"
 
 #+END_SRC
 
