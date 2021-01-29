@@ -2,12 +2,6 @@
 #+HUGO_SECTION: ./
 #+TITLE: Source for Hugo
 
-Boot
-
-#+BEGIN_SRC elisp :results silent
-  (org-babel-do-load-languages 'org-babel-load-languages '((shell . t)))
-#+END_SRC
-
 The only way to learn something properly is to paraphrase the understanding.
 This file is a compilation of my effort on understanding interesting concepts.
 
@@ -231,5 +225,6 @@ Commit script:
 * Local variables
 
 # Local Variables:
+# eval: (org-babel-do-load-languages 'org-babel-load-languages '((shell . t)))
 # eval: (org-hugo-auto-export-mode)
 # End:
