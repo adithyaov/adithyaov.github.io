@@ -32,16 +32,9 @@ Commit script:
   mv public docs
 
   # Add source of truth
-  git add writing.org
-  git commit -m "Updated source of truth"
-
+  git add writing.org docs/.
+  git commit -m "Updated source of truth and regenerated files"
   git push origin master
-
-  # Add changes to git.
-  git add docs/.
-  git commit -m "Sync docs into site"
-  git push origin master
-
 #+END_SRC
 
 * Index
