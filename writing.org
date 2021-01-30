@@ -12,7 +12,44 @@ Add theme:
   git clone https://github.com/jakewies/hugo-theme-codex.git themes/hugo-theme-codex
 #+END_SRC
 
-Commit script:
+Deploy script:
+
+#+NAME: clean-env
+#+BEGIN_SRC sh :results silent
+  #!/bin/sh
+  rm -rf docs
+  rm -rf public
+  rm -rf content
+#+END_SRC
+
+#+NAME: create-src
+#+BEGIN_SRC elisp :results silent
+  (org-hugo-export-wim-to-md t)
+#+END_SRC
+
+#+NAME: create-site
+#+BEGIN_SRC sh :results silent
+  #!/bin/sh
+  hugo
+#+END_SRC
+
+#+NAME: deploy
+#+BEGIN_SRC sh :results silent
+  #!/bin/sh
+  mv public docs
+  git add writing.org docs/.
+  git commit -m "Updated source of truth and regenerated files"
+  git push origin master
+#+END_SRC
+
+#+BEGIN_SRC elisp :results silent
+  (org-sbe clean-env)
+  (org-sbe create-src)
+  (org-sbe create-site)
+  (org-sbe deploy)
+#+END_SRC
+
+
 #+BEGIN_SRC sh :results silent
   #!/bin/sh
 
