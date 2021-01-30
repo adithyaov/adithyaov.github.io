@@ -49,31 +49,6 @@ Deploy script:
   (org-sbe deploy)
 #+END_SRC
 
-
-#+BEGIN_SRC sh :results silent
-  #!/bin/sh
-
-  # If a command fails then the deploy stops
-  set -e
-
-  printf "\033[0;32mDeploying updates to GitHub...\033[0m\n"
-
-  # Remove the default stuff
-  rm -rf docs
-  rm -rf public
-
-  # Build the project.
-  hugo # if using a theme, replace with `hugo`
-
-  # Move public to docs.
-  mv public docs
-
-  # Add source of truth
-  git add writing.org docs/.
-  git commit -m "Updated source of truth and regenerated files"
-  git push origin master
-#+END_SRC
-
 * Index
   :PROPERTIES:
   :EXPORT_FILE_NAME: _index
@@ -251,5 +226,5 @@ Deploy script:
 
 # Local Variables:
 # eval: (org-babel-do-load-languages 'org-babel-load-languages '((shell . t)))
-# eval: (org-hugo-auto-export-mode)
+# eval: (setq org-confirm-babel-evaluate nil)
 # End:
