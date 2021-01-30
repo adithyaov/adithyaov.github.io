@@ -2,8 +2,17 @@
 #+HUGO_SECTION: ./
 #+TITLE: Source for Hugo
 
+* Introduction
+
 The only way to learn something properly is to paraphrase the understanding.
 This file is a compilation of my effort on understanding interesting concepts.
+
+Every heading can be considered a post, depending on the properties it is either
+exported as a valid post or remains an information in this file.
+
+=ox-hugo= is used for exporting this file as a proper hugo source.
+
+* Deployment
 
 Hugo theme: https://github.com/jakewies/hugo-theme-codex
 
@@ -12,42 +21,48 @@ Add theme:
   git clone https://github.com/jakewies/hugo-theme-codex.git themes/hugo-theme-codex
 #+END_SRC
 
-Deploy script:
+** Code blocks to be run for deployment
 
-#+NAME: clean-env
-#+BEGIN_SRC sh :results silent
-  #!/bin/sh
-  rm -rf docs
-  rm -rf public
-  rm -rf content
-#+END_SRC
+   #+NAME: clean-env
+   #+BEGIN_SRC sh :results silent
+     #!/bin/sh
+     rm -rf docs
+     rm -rf public
+     rm -rf content
+   #+END_SRC
 
-#+NAME: create-src
-#+BEGIN_SRC elisp :results silent
-  (org-hugo-export-wim-to-md t)
-#+END_SRC
+   #+NAME: create-src
+   #+BEGIN_SRC elisp :results silent
+     (org-hugo-export-wim-to-md t)
+   #+END_SRC
 
-#+NAME: create-site
-#+BEGIN_SRC sh :results silent
-  #!/bin/sh
-  hugo
-#+END_SRC
+   #+NAME: create-site
+   #+BEGIN_SRC sh :results silent
+     #!/bin/sh
+     hugo
+   #+END_SRC
 
-#+NAME: deploy
-#+BEGIN_SRC sh :results silent
-  #!/bin/sh
-  mv public docs
-  git add writing.org docs/.
-  git commit -m "Updated source of truth and regenerated files"
-  git push origin master
-#+END_SRC
+   #+NAME: deploy
+   #+BEGIN_SRC sh :results silent
+     #!/bin/sh
+     mv public docs
+     git add writing.org docs/.
+     git commit -m "Updated source of truth and regenerated files"
+     git push origin master
+   #+END_SRC
 
-#+BEGIN_SRC elisp :results silent
-  (org-sbe clean-env)
-  (org-sbe create-src)
-  (org-sbe create-site)
-  (org-sbe deploy)
-#+END_SRC
+** Running the code blocks in order
+
+   This is the actual deployment script. =switch= anologous to what
+   =home-manager switch= does.
+
+   #+NAME: switch
+   #+BEGIN_SRC elisp :results silent
+     (org-sbe clean-env)
+     (org-sbe create-src)
+     (org-sbe create-site)
+     (org-sbe deploy)
+    #+END_SRC
 
 * Index
   :PROPERTIES:
@@ -57,11 +72,11 @@ Deploy script:
   :END:
 
 * Writing
- :PROPERTIES:
- :EXPORT_FILE_NAME: _index
- :EXPORT_HUGO_SECTION: blog
- :EXPORT_HUGO_MENU: :menu "main"
- :END:
+  :PROPERTIES:
+  :EXPORT_FILE_NAME: _index
+  :EXPORT_HUGO_SECTION: blog
+  :EXPORT_HUGO_MENU: :menu "main"
+  :END:
 
 
 * Design: Direct style parsers in streamly                         :streamly:
@@ -219,7 +234,6 @@ Deploy script:
 * TODO Kontinuation style parsing
 
 * TODO Lazy functinal state threads
-
 
 
 * Local variables
