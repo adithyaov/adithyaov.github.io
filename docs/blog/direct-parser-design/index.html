@@ -2,7 +2,7 @@
 <html lang="en-us">
 
 <head>
-  <title>Design: Direct style parsers in streamly | Adithya</title>
+  <title>Designing a parser | Adithya</title>
 
   <meta charset="UTF-8">
   <meta name="language" content="en">
@@ -49,8 +49,8 @@
             "@id": "https:\/\/adithyaov.github.io"
       },
       "articleSection" : "blog",
-      "name" : "Design: Direct style parsers in streamly",
-      "headline" : "Design: Direct style parsers in streamly",
+      "name" : "Designing a parser",
+      "headline" : "Designing a parser",
       "description" : "",
       "inLanguage" : "en-US",
       "author" : "",
@@ -62,7 +62,7 @@
       "datePublished": "2021-01-28 00:00:00 \u002b0530 IST",
       "dateModified" : "2021-01-28 00:00:00 \u002b0530 IST",
       "url" : "https:\/\/adithyaov.github.io\/blog\/direct-parser-design\/",
-      "wordCount" : "672",
+      "wordCount" : "1830",
       "keywords" : ["Blog"]
     }
   
@@ -103,7 +103,7 @@
       <div class="post__container">
         <div class="post">
           <header class="post__header">
-            <h1 id="post__title">Design: Direct style parsers in streamly</h1>
+            <h1 id="post__title">Designing a parser</h1>
             <time datetime="2021-01-28 00:00:00 &#43;0530 IST" class="post__date">Jan 28 2021</time> 
           </header>
           <article class="post__content">
@@ -113,114 +113,284 @@
     color: #fff!important;
   }
 </style>
-<p>The following article briefly describes the design of direct style parsers in
-streamly. We won&rsquo;t bother with the implementation details but rather will try
-to see what a parser is.</p>
+<h2 id="introduction">Introduction<a class="anchor" href="#introduction">#</a></h2>
+<p>In this article lets design and code a simple parser combinator library. The
+design that we&rsquo;ll come up with is a simplified version of direct style
+parsers in streamly.</p>
+<h2 id="overview">Overview<a class="anchor" href="#overview">#</a></h2>
+<p>We can all agree the universality of folds. They are very fundamental to
+functional programming. Parsers are nothing but glorified folds and just as
+fundamental. Having a good parsing library is essential for any functional
+ecosystem.</p>
+<p><code>attoparsec</code> and <code>megaparsec</code> are the 2 most famous parsing libraries in
+Haskell. Parsers in both these libraries are represented in continuation
+passing style.</p>
+<p>In this article we&rsquo;ll define direct style parsers instead. They are easy to
+reason about and understand.</p>
+<p>You can read more about continuation passing &amp; direct style
+here. <a href="https://github.com/composewell/streamly/pull/881/">https://github.com/composewell/streamly/pull/881/</a></p>
 <h2 id="design">Design<a class="anchor" href="#design">#</a></h2>
-<p>The design of parsers is inspired by the design of terminating folds. Extend
-terminating folds with backtracing and error handling and voila, you get a
-parser.</p>
-<p>A complete parsing workflow consists of the parser itself and driver that
-uses the parser on an input stream.</p>
-<p>A parser is a set of expressive instructions with a private (internal) state
-that the driver works with. The parser should be designed to answer all the
-questions the driver can potentially ask.</p>
-<p>The driver can ask the following questions to the parser,</p>
-<ol>
-<li>Can I read the next element from the input stream? If not, should I
-consider this parse as a success or a failure?</li>
-<li>Given an input element, how do I fold it into your internal state? Once
-folded, should I backtrack and continue parsing, or terminate? If I should
-terminate is it a success or a failed parse?</li>
-<li>Does your internal state indicate a successful or a failed parse?</li>
-</ol>
-<h3 id="faq">FAQ<a class="anchor" href="#faq">#</a></h3>
-<p><strong>Why does the driver need to ask 1? Why not just read the element and
-backtrack if it isn&rsquo;t required?</strong></p>
-<ol>
-<li>If the parser does not need to consume an element it would be an
-erroneous behavior to consume it.</li>
-<li>The input stream may never yield an input in which case the parser keeps
-waiting.</li>
-</ol>
-<p><strong>Why does the driver need to ask 2?</strong></p>
-<p>Well, that&rsquo;s the parser logic. A parser isn&rsquo;t much of a parser without 2.</p>
-<p><strong>Why does the driver need to ask 3? 2 already tells the driver whether to
-terminate successfully or fail?</strong></p>
-<p>The driver needs to know what to do when the input stream has no more
-elements and the parser has not terminated.</p>
-<h2 id="code-correspondence">Code correspondence<a class="anchor" href="#code-correspondence">#</a></h2>
-<p>The following is how the parser is defined in streamly,</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Step</span> s b
-    <span style="color:#f92672">=</span> <span style="color:#66d9ef">Partial</span> <span style="color:#66d9ef">Int</span> s
-    <span style="color:#f92672">|</span> <span style="color:#66d9ef">Continue</span> <span style="color:#66d9ef">Int</span> s
-    <span style="color:#f92672">|</span> <span style="color:#66d9ef">Done</span> <span style="color:#66d9ef">Int</span> b
-    <span style="color:#f92672">|</span> <span style="color:#66d9ef">Error</span> <span style="color:#66d9ef">String</span>
+<p>Parsers are nothing but an extension to folds with some more
+properties. Consider the type of a <code>foldl</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#a6e22e">foldl</span> <span style="color:#f92672">::</span> (s <span style="color:#f92672">-&gt;</span> a <span style="color:#f92672">-&gt;</span> s) <span style="color:#f92672">-&gt;</span> s <span style="color:#f92672">-&gt;</span> [a] <span style="color:#f92672">-&gt;</span> b
+</code></pre></div><p>We can represent this as a data type,</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#75715e">-- | Data type representing the fold</span>
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Fold</span> a b <span style="color:#f92672">=</span> <span style="color:#66d9ef">Fold</span> (s <span style="color:#f92672">-&gt;</span> a <span style="color:#f92672">-&gt;</span> s) s (s <span style="color:#f92672">-&gt;</span> b)
 
-<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Initial</span> s b
-    <span style="color:#f92672">=</span> <span style="color:#66d9ef">IPartial</span> s
-    <span style="color:#f92672">|</span> <span style="color:#66d9ef">IDone</span> b
-    <span style="color:#f92672">|</span> <span style="color:#66d9ef">IError</span> <span style="color:#66d9ef">String</span>
+<span style="color:#75715e">-- | The fold driver that runs the fold</span>
+<span style="color:#a6e22e">driver</span> <span style="color:#f92672">::</span> <span style="color:#66d9ef">Fold</span> a b <span style="color:#f92672">-&gt;</span> [a] <span style="color:#f92672">-&gt;</span> b
+<span style="color:#a6e22e">driver</span> <span style="color:#f92672">=</span> undefined
+</code></pre></div><p>For the ease of representation and combination we keep the state of the fold
+internal. Instead, we add a function <code>(s -&gt; b)</code> to extract this internal
+state.</p>
+<p>The implementation of <code>driver</code> is left to the reader. Try implementing all
+the <code>undefined</code> functions for better understanding.</p>
+<p>Additional to the process of folding, the parser has these extra properties,</p>
+<ul>
+<li>termination</li>
+<li>backtracking</li>
+<li>error handeling</li>
+</ul>
+<p>From the parser type, the parser driver should know whether to terminate,
+amount to backtrack and whether the parse is a success or a failure.</p>
+<p>Extending for termination,</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#75715e">-- | This is the result of the @step@ function</span>
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Step</span> s b <span style="color:#f92672">=</span> <span style="color:#66d9ef">Partial</span> s <span style="color:#f92672">|</span> <span style="color:#66d9ef">Done</span> b
 
+<span style="color:#75715e">-- | This is the initial value</span>
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Initial</span> s b <span style="color:#f92672">=</span> <span style="color:#66d9ef">IPartial</span> s <span style="color:#f92672">|</span> <span style="color:#66d9ef">IDone</span> b
+
+<span style="color:#75715e">-- | Data type representing the fold</span>
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Fold2</span> a b <span style="color:#f92672">=</span> <span style="color:#66d9ef">Fold2</span> (s <span style="color:#f92672">-&gt;</span> a <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Step</span> s b) (<span style="color:#66d9ef">Initial</span> s b) (s <span style="color:#f92672">-&gt;</span> b)
+
+<span style="color:#75715e">-- | The fold driver that runs the fold</span>
+<span style="color:#a6e22e">driver</span> <span style="color:#f92672">::</span> <span style="color:#66d9ef">Fold2</span> a b <span style="color:#f92672">-&gt;</span> [a] <span style="color:#f92672">-&gt;</span> b
+<span style="color:#a6e22e">driver</span> <span style="color:#f92672">=</span> undefined
+</code></pre></div><p>The reason we have different types for representing the result of step &amp;
+initial is beause I preemptively know that these types are going to
+diverge. If you just want to create terminating folds you can use the same
+data type.</p>
+<p><code>Fold2</code> represents terminating folds. The driver can terminate when it
+encounters <code>IDone</code> or <code>Done</code>. The implementation of the driver is left to the
+reader.</p>
+<p>Extending for error handeling,</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#75715e">-- | This is the result of the @step@ function</span>
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Step</span> s b <span style="color:#f92672">=</span> <span style="color:#66d9ef">Partial</span> s <span style="color:#f92672">|</span> <span style="color:#66d9ef">Done</span> b <span style="color:#f92672">|</span> <span style="color:#66d9ef">Error</span> <span style="color:#66d9ef">String</span>
+
+<span style="color:#75715e">-- | This is the initial value</span>
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Initial</span> s b <span style="color:#f92672">=</span> <span style="color:#66d9ef">IPartial</span> s <span style="color:#f92672">|</span> <span style="color:#66d9ef">IDone</span> b <span style="color:#f92672">|</span> <span style="color:#66d9ef">IError</span> <span style="color:#66d9ef">String</span>
+
+<span style="color:#75715e">-- | This is the result of @extract@</span>
 <span style="color:#66d9ef">type</span> <span style="color:#66d9ef">Extract</span> b <span style="color:#f92672">=</span> <span style="color:#66d9ef">Either</span> <span style="color:#66d9ef">String</span> b
 
-<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Parser</span> m a b <span style="color:#f92672">=</span>
-    forall s<span style="color:#f92672">.</span> <span style="color:#66d9ef">Parser</span>
-                  (s <span style="color:#f92672">-&gt;</span> a <span style="color:#f92672">-&gt;</span> m (<span style="color:#66d9ef">Step</span> s b))
-                  (m (<span style="color:#66d9ef">Initial</span> s b))
-                  (s <span style="color:#f92672">-&gt;</span> m (<span style="color:#66d9ef">Extract</span> b))
-</code></pre></div><p>The structure above is expressive enough to answer all the questions
-the driver can ask.</p>
-<p><code>Initial</code>, along with wrapping the internal state of the parser, instructs
-the driver whether it should read the next element or terminate. <code>IDone</code>
-indicates successful termination whereas <code>IError</code> indicates a failed one.</p>
-<p>The step function tells the driver how the element should be folded with a
-previous state. The return type of the step function <code>Step</code>, along with
-encapsulating the new state, instructs the parser whether to backtrack and
-continue or terminate. <code>Done</code> and <code>Error</code> correspond to successful and failed
-termination states.</p>
-<p><code>Extract</code> expresses whether the internal state at the current moment
-indicates a successful or a failed parse, conveniently encoded by <code>Either</code>.</p>
-<h2 id="driver-workflow">Driver workflow<a class="anchor" href="#driver-workflow">#</a></h2>
-<p>At this point, the workflow of the driver is rather straight
-forward. Regardless of how a driver is implemented the driver does the
-following,</p>
-<ol>
-<li>
-<p>Ask the parser whether to read the next element of the input stream,</p>
-<ul>
-<li>Yes -&gt; Jump to <strong>2</strong></li>
-<li>No -&gt; Jump to <strong>4</strong></li>
-</ul>
-</li>
-<li>
-<p>Try reading the next element,</p>
-<ul>
-<li>Element is available -&gt; Jump to <strong>3</strong></li>
-<li>Stream has ended -&gt; Jump to <strong>4</strong></li>
-</ul>
-</li>
-<li>
-<p>Read the element, fold it, and ask the parser what to do next,</p>
-<ul>
-<li>Terminate -&gt; Jump to <strong>4</strong></li>
-<li>Backtrack and continue -&gt; Backtracka nd jump to <strong>1</strong></li>
-</ul>
-</li>
-<li>
-<p>Check if the parse termination state</p>
-<ul>
-<li>Successful -&gt; End parsing as a success</li>
-<li>Failure -&gt; End parsing with a failure</li>
-</ul>
-</li>
-</ol>
-<h2 id="closing-statements">Closing statements<a class="anchor" href="#closing-statements">#</a></h2>
-<p>Streamly is ever-evolving and parsers are going to evolve with the
-library. There are a lot of plans to make parsers more expressive and
-efficient. Although this guide might become obsolete within the next few
-releases of streamly, the ideas will remain the same. Quoting V, Ideas are
-bulletproof.</p>
+<span style="color:#75715e">-- | Data type representing the fold</span>
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Fold3</span> a b <span style="color:#f92672">=</span> <span style="color:#66d9ef">Fold3</span> (s <span style="color:#f92672">-&gt;</span> a <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Step</span> s b) (<span style="color:#66d9ef">Initial</span> s b) (s <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Extract</span> b)
+
+<span style="color:#75715e">-- | The fold driver that runs the fold</span>
+<span style="color:#a6e22e">driver</span> <span style="color:#f92672">::</span> <span style="color:#66d9ef">Fold3</span> a b <span style="color:#f92672">-&gt;</span> [a] <span style="color:#f92672">-&gt;</span> b
+<span style="color:#a6e22e">driver</span> <span style="color:#f92672">=</span> undefined
+</code></pre></div><p>The result types <code>Step</code> and <code>Initial</code> now can represent <code>Error</code> for the
+driver to act accordingly.</p>
+<p>On extraction the driver needs to know the state of the parser. This is
+particularly useful to denote the success or a failed state when the input
+stream ends. This state is conveniently represented by <code>Either</code> (aliased to
+<code>Extract</code>).</p>
+<p>Extending for backtracking,</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#75715e">-- | This is the result of the @step@ function</span>
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Step</span> s b <span style="color:#f92672">=</span> <span style="color:#66d9ef">Partial</span> <span style="color:#66d9ef">Int</span> s <span style="color:#f92672">|</span> <span style="color:#66d9ef">Done</span> <span style="color:#66d9ef">Int</span> b <span style="color:#f92672">|</span> <span style="color:#66d9ef">Error</span> <span style="color:#66d9ef">String</span>
+
+<span style="color:#75715e">-- | This is the initial value</span>
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Initial</span> s b <span style="color:#f92672">=</span> <span style="color:#66d9ef">IPartial</span> s <span style="color:#f92672">|</span> <span style="color:#66d9ef">IDone</span> b <span style="color:#f92672">|</span> <span style="color:#66d9ef">Error</span> <span style="color:#66d9ef">String</span>
+
+<span style="color:#75715e">-- | Data type representing the fold</span>
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Fold4</span> a b <span style="color:#f92672">=</span> <span style="color:#66d9ef">Fold4</span> (s <span style="color:#f92672">-&gt;</span> a <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Step</span> s b) (<span style="color:#66d9ef">Initial</span> s b) (s <span style="color:#f92672">-&gt;</span> b)
+
+<span style="color:#75715e">-- | The fold driver that runs the fold</span>
+<span style="color:#a6e22e">driver</span> <span style="color:#f92672">::</span> <span style="color:#66d9ef">Fold4</span> a b <span style="color:#f92672">-&gt;</span> [a] <span style="color:#f92672">-&gt;</span> b
+<span style="color:#a6e22e">driver</span> <span style="color:#f92672">=</span> undefined
+</code></pre></div><p>This is a little tricky. We can represent backtracking in multiple ways.</p>
+<p>We can leave the logic of backtracking to the driver and communicate the
+amount to backtrack via the constructors, which is what we are doing now.
+Or, the types themselves can be designed to return the unused list of
+elements to the driver.</p>
+<p>We&rsquo;ll discuss the pros and cons of each method in another article. For now,
+we&rsquo;ll just let the driver handle backtracking.</p>
+<p><code>Fold4</code> is basically a parser. This is how a parser will look like in our
+experimental parser combinator library.</p>
+<h2 id="library">Library<a class="anchor" href="#library">#</a></h2>
+<p>Alright, let&rsquo;s start building our library. Our library will only contain one
+module named <code>Parser</code>.</p>
+<p>We&rsquo;ll start by adding some language extensions and creating a module header.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#75715e">{-# LANGUAGE ExistentialQuantification #-}</span>
+
+<span style="color:#66d9ef">module</span> Parser <span style="color:#66d9ef">where</span>
+</code></pre></div><p><code>Fold4</code> will act as the base type for our library. Let&rsquo;s rename it to
+<code>Parser</code> and add it.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#75715e">-- | This is the result of the @step@ function</span>
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Step</span> s b <span style="color:#f92672">=</span> <span style="color:#66d9ef">Partial</span> <span style="color:#66d9ef">Int</span> s <span style="color:#f92672">|</span> <span style="color:#66d9ef">Done</span> <span style="color:#66d9ef">Int</span> b <span style="color:#f92672">|</span> <span style="color:#66d9ef">Error</span> <span style="color:#66d9ef">String</span>
+
+<span style="color:#75715e">-- | This is the initial value</span>
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Initial</span> s b <span style="color:#f92672">=</span> <span style="color:#66d9ef">IPartial</span> s <span style="color:#f92672">|</span> <span style="color:#66d9ef">IDone</span> b <span style="color:#f92672">|</span> <span style="color:#66d9ef">Error</span> <span style="color:#66d9ef">String</span>
+
+<span style="color:#75715e">-- | Data type representing the parser</span>
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Parser</span> a b <span style="color:#f92672">=</span> <span style="color:#66d9ef">Parser</span> (s <span style="color:#f92672">-&gt;</span> a <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Step</span> s b) (<span style="color:#66d9ef">Initial</span> s b) (s <span style="color:#f92672">-&gt;</span> b)
+
+<span style="color:#75715e">-- | The parser driver that runs the parser</span>
+<span style="color:#a6e22e">driver</span> <span style="color:#f92672">::</span> <span style="color:#66d9ef">Parser</span> a b <span style="color:#f92672">-&gt;</span> [a] <span style="color:#f92672">-&gt;</span> b
+<span style="color:#a6e22e">driver</span> <span style="color:#f92672">=</span> undefined
+</code></pre></div><p>Every parser combinator library needs atleast one primitive parser. The only
+primitive parser in our library is <code>sum</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#75715e">-- | A non-terminating non-failing parser that just adds elements</span>
+<span style="color:#a6e22e">sum</span> <span style="color:#f92672">::</span> <span style="color:#66d9ef">Parser</span> <span style="color:#66d9ef">Int</span> <span style="color:#66d9ef">Int</span>
+<span style="color:#a6e22e">sum</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">Parser</span> step initial extract
+
+    <span style="color:#66d9ef">where</span>
+
+    initial <span style="color:#f92672">=</span> <span style="color:#66d9ef">IPartial</span> <span style="color:#ae81ff">0</span>
+    step s a <span style="color:#f92672">=</span> <span style="color:#66d9ef">Partial</span> <span style="color:#ae81ff">0</span> (s <span style="color:#f92672">+</span> a)
+    extract s <span style="color:#f92672">=</span> <span style="color:#66d9ef">Right</span> s
+</code></pre></div><p>A parser combinator library is no good without basic combinators modifying
+the primitives. Our library contains two such combinators, namely,
+<code>takeWhile</code> and <code>takeEqualTo</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#75715e">-- | A parser that takes while the predicate is true.</span>
+<span style="color:#75715e">-- Terminates: When predicate fails</span>
+<span style="color:#75715e">-- Fails: Never</span>
+<span style="color:#a6e22e">takeWhile</span> <span style="color:#f92672">::</span> (a <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Bool</span>) <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Parser</span> a b <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Parser</span> a b
+<span style="color:#a6e22e">takeWhile</span> pred (<span style="color:#66d9ef">Parser</span> step initial extract) <span style="color:#f92672">=</span> <span style="color:#66d9ef">Parser</span> step1 initial1 extract1
+
+    <span style="color:#66d9ef">where</span>
+
+    initial1 <span style="color:#f92672">=</span> initial
+    extract1 <span style="color:#f92672">=</span> extract
+
+    step1 s a <span style="color:#f92672">=</span>
+        <span style="color:#66d9ef">if</span> pred a
+        <span style="color:#66d9ef">then</span> step s a
+        <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">case</span> extract s <span style="color:#66d9ef">of</span>
+                 <span style="color:#66d9ef">Left</span> err <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Error</span> err
+                 <span style="color:#66d9ef">Right</span> b <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Done</span> <span style="color:#ae81ff">1</span> b
+
+<span style="color:#75715e">-- | A parser that takes exactly n elements.</span>
+<span style="color:#75715e">-- Terminates: After taking n elements</span>
+<span style="color:#75715e">-- Fails: When less than n elements are consumed</span>
+<span style="color:#a6e22e">takeEqualTo</span> <span style="color:#f92672">::</span> <span style="color:#66d9ef">Int</span> <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Parser</span> a b <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Parser</span> a b
+<span style="color:#a6e22e">takeEqualTo</span> n (<span style="color:#66d9ef">Parser</span> step initial extract) <span style="color:#f92672">=</span> <span style="color:#66d9ef">Parser</span> step1 initial1 extract1
+
+    <span style="color:#66d9ef">where</span>
+
+    initial1 <span style="color:#f92672">=</span>
+        <span style="color:#66d9ef">case</span> initial <span style="color:#66d9ef">of</span>
+            <span style="color:#66d9ef">IPartial</span> s <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">IPartial</span> (<span style="color:#ae81ff">0</span>, s)
+            <span style="color:#66d9ef">IDone</span> b <span style="color:#f92672">-&gt;</span>
+                <span style="color:#66d9ef">if</span> n <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>
+                <span style="color:#66d9ef">then</span> <span style="color:#66d9ef">IDone</span> b
+                <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">IError</span> <span style="color:#e6db74">&#34;takeGreaterThan: Took 0 elements&#34;</span>
+            <span style="color:#66d9ef">IError</span> err <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">IError</span> err
+
+    extract1 (i, s) <span style="color:#f92672">=</span>
+        <span style="color:#66d9ef">if</span> i <span style="color:#f92672">==</span> n
+        <span style="color:#66d9ef">then</span> <span style="color:#66d9ef">Right</span> <span style="color:#f92672">$</span> extract s
+        <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">Left</span> <span style="color:#e6db74">&#34;takeGreaterThan: Took less than n elements&#34;</span>
+
+    step1 (i, s) a <span style="color:#f92672">=</span>
+        <span style="color:#66d9ef">let</span> i1 <span style="color:#f92672">=</span> i <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+         <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">case</span> step s a <span style="color:#66d9ef">of</span>
+                <span style="color:#75715e">-- k elements are unconsumed and will be backtracked. We need to</span>
+                <span style="color:#75715e">-- update our state accordingly.</span>
+                <span style="color:#66d9ef">Partial</span> k s <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Partial</span> k (i1 <span style="color:#f92672">-</span> k, s)
+                <span style="color:#66d9ef">Done</span> k b <span style="color:#f92672">-&gt;</span>
+                    <span style="color:#75715e">-- Since k elements will be backtracked, &#34;i1 - k&#34; is the</span>
+                    <span style="color:#75715e">-- number of elements actually consumed.</span>
+                    <span style="color:#66d9ef">if</span> i1 <span style="color:#f92672">-</span> k <span style="color:#f92672">==</span> n
+                    <span style="color:#66d9ef">then</span> <span style="color:#66d9ef">Done</span> k b
+                    <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">Error</span> <span style="color:#e6db74">&#34;takeGreaterThan: Took less than n elements&#34;</span>
+                <span style="color:#66d9ef">Error</span> err <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Error</span> err
+</code></pre></div><p>And finally, the most important parser combinator combining multiple parsers,
+<code>aplitWith</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell">
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">SplitWithState</span> sl sr bl <span style="color:#f92672">=</span> <span style="color:#66d9ef">SWLeft</span> sl <span style="color:#f92672">|</span> <span style="color:#66d9ef">SWRight</span> bl sr
+
+<span style="color:#75715e">-- | A parser that sequentially combines 2 parsers</span>
+<span style="color:#a6e22e">splitWith</span> <span style="color:#f92672">::</span> (b <span style="color:#f92672">-&gt;</span> c <span style="color:#f92672">-&gt;</span> d) <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Parser</span> a b <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Parser</span> a c <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Parser</span> a d
+<span style="color:#a6e22e">splitWith</span> f (<span style="color:#66d9ef">Parser</span> stepL initialL extractL) (<span style="color:#66d9ef">Parser</span> stepR initialR extractR) <span style="color:#f92672">=</span>
+    <span style="color:#66d9ef">Parser</span> step initial extract
+
+    <span style="color:#66d9ef">where</span>
+
+    initial <span style="color:#f92672">=</span>
+        <span style="color:#66d9ef">case</span> initialL <span style="color:#66d9ef">of</span>
+            <span style="color:#66d9ef">IPartial</span> sl <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">IPartial</span> <span style="color:#f92672">$</span> <span style="color:#66d9ef">SWLeft</span> sl
+            <span style="color:#66d9ef">IDone</span> bl <span style="color:#f92672">-&gt;</span>
+                <span style="color:#66d9ef">case</span> initialR <span style="color:#66d9ef">of</span>
+                    <span style="color:#66d9ef">IPartial</span> sr <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">IPartial</span> <span style="color:#f92672">$</span> <span style="color:#66d9ef">SWRight</span> bl sr
+                    <span style="color:#66d9ef">IDone</span> sb <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">IDone</span> <span style="color:#f92672">$</span> f sl sb
+                    <span style="color:#66d9ef">IError</span> err <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">IError</span> err
+            <span style="color:#66d9ef">IError</span> err <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">IError</span> err
+
+    extract (<span style="color:#66d9ef">SWLeft</span> sl) <span style="color:#f92672">=</span>
+        <span style="color:#66d9ef">case</span> extractL sl <span style="color:#66d9ef">of</span>
+          <span style="color:#66d9ef">Left</span> err <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Left</span> err
+          <span style="color:#66d9ef">Right</span> bl <span style="color:#f92672">-&gt;</span>
+              <span style="color:#66d9ef">case</span> initialR <span style="color:#66d9ef">of</span>
+                <span style="color:#66d9ef">IPartial</span> sr <span style="color:#f92672">-&gt;</span>
+                    <span style="color:#66d9ef">case</span> extractR sr <span style="color:#66d9ef">of</span>
+                      <span style="color:#66d9ef">Left</span> err <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Left</span> err
+                      <span style="color:#66d9ef">Right</span> br <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Right</span> <span style="color:#f92672">$</span> f bl br
+                <span style="color:#66d9ef">IDone</span> br <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Right</span> <span style="color:#f92672">$</span> f bl br
+                <span style="color:#66d9ef">IError</span> err <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Left</span> err
+
+    step1 (<span style="color:#66d9ef">SWLeft</span> sl) a <span style="color:#f92672">=</span>
+         <span style="color:#66d9ef">case</span> stepL sl a <span style="color:#66d9ef">of</span>
+                <span style="color:#66d9ef">Partial</span> n sl1 <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Partial</span> n <span style="color:#f92672">$</span> <span style="color:#66d9ef">SWLeft</span> sl1
+                <span style="color:#66d9ef">Done</span> n bl <span style="color:#f92672">-&gt;</span>
+                  <span style="color:#66d9ef">case</span> initialR <span style="color:#66d9ef">of</span>
+                    <span style="color:#66d9ef">IPartial</span> sr <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Partial</span> n <span style="color:#f92672">$</span> <span style="color:#66d9ef">SWRight</span> bl sr
+                    <span style="color:#66d9ef">IDone</span> br <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Done</span> n <span style="color:#f92672">$</span> f bl br
+                    <span style="color:#66d9ef">IError</span> err <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Error</span> err
+                <span style="color:#66d9ef">Error</span> err <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Error</span> err
+
+    step1 (<span style="color:#66d9ef">SWRight</span> bl sr) a <span style="color:#f92672">=</span>
+         <span style="color:#66d9ef">case</span> stepR sr a <span style="color:#66d9ef">of</span>
+                <span style="color:#66d9ef">Partial</span> n sr1 <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Partial</span> n <span style="color:#f92672">$</span> <span style="color:#66d9ef">SWRight</span> bl sr1
+                <span style="color:#66d9ef">Done</span> n br <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Done</span> n <span style="color:#f92672">$</span> f bl br
+                <span style="color:#66d9ef">Error</span> err <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Error</span> err
+</code></pre></div><p><code>splitWith</code> is written in a very idiomatic way to be direct and simple. One
+can cleverly abstract some common code either manually or with the use of
+type classes.</p>
+<p>This may be a lot to take in at once. Take your time and try reasoning with
+the code. Implement the driver, write down a simple parser using the
+combinators that we wrote and manually parse along.</p>
+<p>We can wrap up our library here. This is what a very primitive functional
+library of parsers would look like. The entire code togather is given below,</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell">
+</code></pre></div><h2 id="where-do-you-go-from-here">Where do you go from here?<a class="anchor" href="#where-do-you-go-from-here">#</a></h2>
+<p>The library that we&rsquo;ve created is very small but has some really powerful
+combinators. One obvious improvement is to make the parsers effectful. We can
+do this by making the parser functions, namely, <code>step</code>, <code>initial</code>, and
+<code>extract</code> monadic.</p>
+<p>The parsers defined this way have an interesting property of fusion. When
+written properly, taking into the consideration the limits of the compiler,
+the parsers defined this way form tight loop with no intermediate
+constructors. The increases performance so much so that it can compete with
+carefully structured hand written C.</p>
+<p>What we&rsquo;ve defined is very close to how direct style parsers are implemented
+in streamly. Improving this library will lead to the code defined in the
+<code>Parser-ish</code> modules of streamly. Once you&rsquo;re comfortable with this, feel
+free to contribute to parsers in streamly.</p>
+<h2 id="conclusion">Conclusion<a class="anchor" href="#conclusion">#</a></h2>
+<p>Streamly is ever-evolving and parsers are going to evolve with the library.
+A lot of improvements to parsers are planned and will be available in the
+near future.</p>
+<p>Although this guide might become obsolete within the next few releases of
+streamly, the ideas will remain the same. Quoting V, Ideas are bulletproof.</p>
+<script src="https://utteranc.es/client.js"
+        repo="adithyaov/adithyaov.github.io"
+        issue-term="title"
+        label="utterance"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
 
 
               

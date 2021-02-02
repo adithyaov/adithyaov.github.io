@@ -78,8 +78,7 @@ Add theme:
   :EXPORT_HUGO_MENU: :menu "main"
   :END:
 
-
-* Design: Direct style parsers in streamly                         :streamly:
+* Designing a parser                                               :streamly:
   :PROPERTIES:
   :EXPORT_FILE_NAME: direct-parser-design
   :EXPORT_HUGO_SECTION: blog
@@ -94,30 +93,452 @@ Add theme:
   </style>
   #+END_EXPORT
 
-  The following article briefly describes the design of direct style parsers in
-  streamly. We won't bother with the implementation details but rather will try
-  to see what a parser is.
+** Introduction
+
+   In this article lets design and code a simple parser combinator library. The
+   design that we'll come up with is a simplified version of direct style
+   parsers in streamly.
+
+** Overview
+
+   We can all agree the universality of folds. They are very fundamental to
+   functional programming. Parsers are nothing but glorified folds and just as
+   fundamental. Having a good parsing library is essential for any functional
+   ecosystem.
+
+   =attoparsec= and =megaparsec= are the 2 most famous parsing libraries in
+   Haskell. Parsers in both these libraries are represented in continuation
+   passing style.
+
+   In this article we'll define direct style parsers instead. They are easy to
+   reason about and understand.
+
+   You can read more about continuation passing & direct style
+   here. https://github.com/composewell/streamly/pull/881/
 
 ** Design
+
+   Parsers are nothing but an extension to folds with some more
+   properties. Consider the type of a =foldl=.
+
+   #+BEGIN_SRC haskell
+     foldl :: (s -> a -> s) -> s -> [a] -> b
+   #+END_SRC
+
+   We can represent this as a data type,
+
+   #+BEGIN_SRC haskell
+     -- | Data type representing the fold
+     data Fold a b = Fold (s -> a -> s) s (s -> b)
+
+     -- | The fold driver that runs the fold
+     driver :: Fold a b -> [a] -> b
+     driver = undefined
+   #+END_SRC
+
+   For the ease of representation and combination we keep the state of the fold
+   internal. Instead, we add a function =(s -> b)= to extract this internal
+   state.
+
+   The implementation of =driver= is left to the reader. Try implementing all
+   the =undefined= functions for better understanding.
+
+   Additional to the process of folding, the parser has these extra properties,
+   - termination
+   - backtracking
+   - error handeling
+
+   From the parser type, the parser driver should know whether to terminate,
+   amount to backtrack and whether the parse is a success or a failure.
+
+   Extending for termination,
+
+   #+BEGIN_SRC haskell
+     -- | This is the result of the @step@ function
+     data Step s b = Partial s | Done b
+
+     -- | This is the initial value
+     data Initial s b = IPartial s | IDone b
+
+     -- | Data type representing the fold
+     data Fold2 a b = Fold2 (s -> a -> Step s b) (Initial s b) (s -> b)
+
+     -- | The fold driver that runs the fold
+     driver :: Fold2 a b -> [a] -> b
+     driver = undefined
+   #+END_SRC
+
+   The reason we have different types for representing the result of step &
+   initial is beause I preemptively know that these types are going to
+   diverge. If you just want to create terminating folds you can use the same
+   data type.
+
+   =Fold2= represents terminating folds. The driver can terminate when it
+   encounters =IDone= or =Done=. The implementation of the driver is left to the
+   reader.
+
+   Extending for error handeling,
+
+   #+BEGIN_SRC haskell
+     -- | This is the result of the @step@ function
+     data Step s b = Partial s | Done b | Error String
+
+     -- | This is the initial value
+     data Initial s b = IPartial s | IDone b | IError String
+
+     -- | This is the result of @extract@
+     type Extract b = Either String b
+
+     -- | Data type representing the fold
+     data Fold3 a b = Fold3 (s -> a -> Step s b) (Initial s b) (s -> Extract b)
+
+     -- | The fold driver that runs the fold
+     driver :: Fold3 a b -> [a] -> b
+     driver = undefined
+   #+END_SRC
+
+   The result types =Step= and =Initial= now can represent =Error= for the
+   driver to act accordingly.
+
+   On extraction the driver needs to know the state of the parser. This is
+   particularly useful to denote the success or a failed state when the input
+   stream ends. This state is conveniently represented by =Either= (aliased to
+   =Extract=).
+
+   Extending for backtracking,
+
+   #+BEGIN_SRC haskell
+     -- | This is the result of the @step@ function
+     data Step s b = Partial Int s | Done Int b | Error String
+
+     -- | This is the initial value
+     data Initial s b = IPartial s | IDone b | Error String
+
+     -- | Data type representing the fold
+     data Fold4 a b = Fold4 (s -> a -> Step s b) (Initial s b) (s -> b)
+
+     -- | The fold driver that runs the fold
+     driver :: Fold4 a b -> [a] -> b
+     driver = undefined
+   #+END_SRC
+
+   This is a little tricky. We can represent backtracking in multiple ways.
+
+   We can leave the logic of backtracking to the driver and communicate the
+   amount to backtrack via the constructors, which is what we are doing now.
+   Or, the types themselves can be designed to return the unused list of
+   elements to the driver.
+
+   We'll discuss the pros and cons of each method in another article. For now,
+   we'll just let the driver handle backtracking.
+
+   =Fold4= is basically a parser. This is how a parser will look like in our
+   experimental parser combinator library.
+
+** Library
+
+   Alright, let's start building our library. Our library will only contain one
+   module named =Parser=.
+
+   We'll start by adding some language extensions and creating a module header.
+
+   #+BEGIN_SRC haskell
+     {-# LANGUAGE ExistentialQuantification #-}
+
+     module Parser where
+   #+END_SRC
+
+   =Fold4= will act as the base type for our library. Let's rename it to
+   =Parser= and add it.
+
+   #+BEGIN_SRC haskell
+     -- | This is the result of the @step@ function
+     data Step s b = Partial Int s | Done Int b | Error String
+
+     -- | This is the initial value
+     data Initial s b = IPartial s | IDone b | Error String
+
+     -- | Data type representing the parser
+     data Parser a b = Parser (s -> a -> Step s b) (Initial s b) (s -> b)
+
+     -- | The parser driver that runs the parser
+     driver :: Parser a b -> [a] -> b
+     driver = undefined
+   #+END_SRC
+
+   Every parser combinator library needs atleast one primitive parser. The only
+   primitive parser in our library is =sum=.
+
+   #+BEGIN_SRC haskell
+     -- | A non-terminating non-failing parser that just adds elements
+     sum :: Parser Int Int
+     sum = Parser step initial extract
+
+         where
+
+         initial = IPartial 0
+         step s a = Partial 0 (s + a)
+         extract s = Right s
+   #+END_SRC
+
+   A parser combinator library is no good without basic combinators modifying
+   the primitives. Our library contains two such combinators, namely,
+   =takeWhile= and =takeEqualTo=.
+
+   #+BEGIN_SRC haskell
+     -- | A parser that takes while the predicate is true.
+     -- Terminates: When predicate fails
+     -- Fails: Never
+     takeWhile :: (a -> Bool) -> Parser a b -> Parser a b
+     takeWhile pred (Parser step initial extract) = Parser step1 initial1 extract1
+
+         where
+
+         initial1 = initial
+         extract1 = extract
+
+         step1 s a =
+             if pred a
+             then step s a
+             else case extract s of
+                      Left err -> Error err
+                      Right b -> Done 1 b
+
+     -- | A parser that takes exactly n elements.
+     -- Terminates: After taking n elements
+     -- Fails: When less than n elements are consumed
+     takeEqualTo :: Int -> Parser a b -> Parser a b
+     takeEqualTo n (Parser step initial extract) = Parser step1 initial1 extract1
+
+         where
+
+         initial1 =
+             case initial of
+                 IPartial s -> IPartial (0, s)
+                 IDone b ->
+                     if n == 0
+                     then IDone b
+                     else IError "takeGreaterThan: Took 0 elements"
+                 IError err -> IError err
+
+         extract1 (i, s) =
+             if i == n
+             then Right $ extract s
+             else Left "takeGreaterThan: Took less than n elements"
+
+         step1 (i, s) a =
+             let i1 = i + 1
+              in case step s a of
+                     -- k elements are unconsumed and will be backtracked. We need to
+                     -- update our state accordingly.
+                     Partial k s -> Partial k (i1 - k, s)
+                     Done k b ->
+                         -- Since k elements will be backtracked, "i1 - k" is the
+                         -- number of elements actually consumed.
+                         if i1 - k == n
+                         then Done k b
+                         else Error "takeGreaterThan: Took less than n elements"
+                     Error err -> Error err
+   #+END_SRC
+
+   And finally, the most important parser combinator combining multiple parsers,
+   =aplitWith=.
+
+   #+BEGIN_SRC haskell
+
+     data SplitWithState sl sr bl = SWLeft sl | SWRight bl sr
+
+     -- | A parser that sequentially combines 2 parsers
+     splitWith :: (b -> c -> d) -> Parser a b -> Parser a c -> Parser a d
+     splitWith f (Parser stepL initialL extractL) (Parser stepR initialR extractR) =
+         Parser step initial extract
+
+         where
+
+         initial =
+             case initialL of
+                 IPartial sl -> IPartial $ SWLeft sl
+                 IDone bl ->
+                     case initialR of
+                         IPartial sr -> IPartial $ SWRight bl sr
+                         IDone sb -> IDone $ f sl sb
+                         IError err -> IError err
+                 IError err -> IError err
+
+         extract (SWLeft sl) =
+             case extractL sl of
+               Left err -> Left err
+               Right bl ->
+                   case initialR of
+                     IPartial sr ->
+                         case extractR sr of
+                           Left err -> Left err
+                           Right br -> Right $ f bl br
+                     IDone br -> Right $ f bl br
+                     IError err -> Left err
+
+         step1 (SWLeft sl) a =
+              case stepL sl a of
+                     Partial n sl1 -> Partial n $ SWLeft sl1
+                     Done n bl ->
+                       case initialR of
+                         IPartial sr -> Partial n $ SWRight bl sr
+                         IDone br -> Done n $ f bl br
+                         IError err -> Error err
+                     Error err -> Error err
+
+         step1 (SWRight bl sr) a =
+              case stepR sr a of
+                     Partial n sr1 -> Partial n $ SWRight bl sr1
+                     Done n br -> Done n $ f bl br
+                     Error err -> Error err
+   #+END_SRC
+
+   =splitWith= is written in a very idiomatic way to be direct and simple. One
+   can cleverly abstract some common code either manually or with the use of
+   type classes.
+
+   This may be a lot to take in at once. Take your time and try reasoning with
+   the code. Implement the driver, write down a simple parser using the
+   combinators that we wrote and manually parse along.
+
+   We can wrap up our library here. This is what a very primitive functional
+   library of parsers would look like. The entire code togather is given below,
+
+   #+BEGIN_SRC haskell
+
+   #+END_SRC
+
+** Where do you go from here?
+
+   The library that we've created is very small but has some really powerful
+   combinators. One obvious improvement is to make the parsers effectful. We can
+   do this by making the parser functions, namely, =step=, =initial=, and
+   =extract= monadic.
+
+   The parsers defined this way have an interesting property of fusion. When
+   written properly, taking into the consideration the limits of the compiler,
+   the parsers defined this way form tight loop with no intermediate
+   constructors. The increases performance so much so that it can compete with
+   carefully structured hand written C.
+
+   What we've defined is very close to how direct style parsers are implemented
+   in streamly. Improving this library will lead to the code defined in the
+   =Parser-ish= modules of streamly. Once you're comfortable with this, feel
+   free to contribute to parsers in streamly.
+
+** Conclusion
+
+   Streamly is ever-evolving and parsers are going to evolve with the library.
+   A lot of improvements to parsers are planned and will be available in the
+   near future.
+
+   Although this guide might become obsolete within the next few releases of
+   streamly, the ideas will remain the same. Quoting V, Ideas are bulletproof.
+
+  #+BEGIN_EXPORT html
+<script src="https://utteranc.es/client.js"
+        repo="adithyaov/adithyaov.github.io"
+        issue-term="title"
+        label="utterance"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+  #+END_EXPORT
+
+* Backup about parsers
 
   The design of parsers is inspired by the design of terminating folds. Extend
   terminating folds with backtracing and error handling and voila, you get a
   parser.
 
-  A complete parsing workflow consists of the parser itself and driver that
-  uses the parser on an input stream.
+  A complete parsing workflow consists of the parser itself and driver that uses
+  the parser on an input stream.
 
-  A parser is a set of expressive instructions with a private (internal) state
-  that the driver works with. The parser should be designed to answer all the
-  questions the driver can potentially ask.
+  Simply put, the parser is a higher level turing machine and the driver is
+  something that runs this turing machine. The driver also manages the input
+  tape for this turing machine.
 
-  The driver can ask the following questions to the parser,
+*** Parser
+
+  Instead of using a mathematical notation, lets describe this higher level
+  turing machine in haskell.
+
+  The parser in streamly is defined like so,
+
+  #+BEGIN_SRC haskell
+    data Step s b
+        = Partial Int s
+        | Continue Int s
+        | Done Int b
+        | Error String
+
+    data Initial s b
+        = IPartial s
+        | IDone b
+        | IError String
+
+    type Extract b = Either String b
+
+    data Parser m a b =
+        forall s. Parser
+                      (s -> a -> m (Step s b))
+                      (m (Initial s b))
+                      (s -> m (Extract b))
+  #+END_SRC
+
+  Unlike the turing maching the parser has a much more expressive transition
+  (step) function =s -> a -> m (Step s b)=, a much more expressive initial state
+  `(m (Initial s b))`
+
+  The parser can either be in a state of uncertainity, a state of success, or a
+  state of failure.
+
+  Once the parser is in a state of success or a state of failure, the driver
+  ends the process of parsing.
+
+
+
+
+
+  - =s= is the intermediate state of the parser
+  - =b= is the result of the parser on a successful parse
+  -
+
+  =a= is a finite, non-empty set of tape alphabet symbols (the input elements).
+  =b= is the successful result of the
+
+
+
+  Using the same symbols as above, =s= is the finite set of non-empty states. At
+  any moment in time, =s= can be extracted to =b=
+
+
+
+
+  The parser is a blueprint that the driver refers to. This blueprint should be
+  composable and should be expressive enough to answer all the questions the
+  driver asks.
+
+  Parsing is a stateful computation and so this blueprint happens to also define
+  a state. The driver does not need to know the state but should know how to
+  interact with it.
+
+
+
+  The parser should be designed to answer all the questions the driver can
+  potentially ask. The driver can ask the following questions to the parser,
+
   1. Can I read the next element from the input stream? If not, should I
      consider this parse as a success or a failure?
-  2. Given an input element, how do I fold it into your internal state? Once
-     folded, should I backtrack and continue parsing, or terminate? If I should
-     terminate is it a success or a failed parse?
-  3. Does your internal state indicate a successful or a failed parse?
+  2. Given an input element, how do I fold it? Once folded, should I backtrack
+     and continue parsing, or terminate? If I should terminate is it a success
+     or a failed parse?
+  3. At this current point in time, is the parse successful or unknown? An
+     unknown state is a failed parse.
+
+
 
 *** FAQ
 
@@ -186,21 +607,36 @@ Add theme:
    forward. Regardless of how a driver is implemented the driver does the
    following,
 
-   1. Ask the parser whether to read the next element of the input stream,
-     - Yes -> Jump to *2*
-     - No -> Jump to *4*
+   #+BEGIN_SRC plantuml :file ./static/driver-workflow.png
+State1: Read the element?
+State2: Element is available?
+State3: Fold the element
+State4: Terminate or backtrack?
+State5: Backtrack
+State6: Check termination state
+State7: End parsing as Success
+State8: End parsing as Failure
 
-   2. Try reading the next element,
-      - Element is available -> Jump to *3*
-      - Stream has ended -> Jump to *4*
+State1 --> State2 : Yes
+State1 --> State6 : No
 
-   3. Read the element, fold it, and ask the parser what to do next,
-      - Terminate -> Jump to *4*
-      - Backtrack and continue -> Backtracka nd jump to *1*
+State2 --> State3 : Yes
+State2 --> State6 : No
 
-   4. Check if the parse termination state
-      - Successful -> End parsing as a success
-      - Failure -> End parsing with a failure
+State3 --> State4
+
+State4 --> State6 : Terminate
+State4 --> State5 : Backtrack
+
+State5 --> State1
+
+State6 --> State7 : Success
+State6 --> State8 : Failure
+   #+END_SRC
+
+   #+RESULTS:
+   [[file:./static/driver-workflow.png]]
+
 
 ** Closing statements
 
@@ -222,7 +658,6 @@ Add theme:
   =Partial= with =Continue= and the code will still be correct but less
   performant.
 
-
 * TODO Buffering in parsers
 
   Without much digression, let me state that buffering of the input stream for
@@ -235,6 +670,59 @@ Add theme:
 
 * TODO Lazy functinal state threads
 
+* TODO More generality leads to lesser performance
+
+* TODO concatMap vs inject-isq
+
+  Consider the all powerful =concatMap=. It is probably the most general operation
+  w.r.t any type that streamly has.
+
+  In most cases such generality might not be required which is evident in the
+  case of =Unfold=. This intermediate generality was possible because the
+  representation contained =inject=.
+
+  Chaining =Unfold= with =concat= turns out to be very efficient as the compiler
+  has the required information at compile time for optimization.
+
+  It should be possible to do the same for =Fold= and =Parser=.
+
+   #+BEGIN_SRC haskell
+     data Fold m i a b =
+         -- | @Fold @ @ step @ @ inject @ @ extract@
+         forall s. Fold (s -> a -> m (Step s b)) (i -> m (Step s b)) (s -> m b)
+
+     split :: Fold m i a j -> Fold m j a b -> Fold m i a b
+     split = undefined
+   #+END_SRC
+
+   Something like this can be used in most cases where one might want to use
+   =concatMap=-ish combinator.
+
+   If you consider parsing a packet of some protocol with variable length
+   fields, this approach would be significantly more performant than using
+   =concatMap=.
+
+   I haven't given too much thought to it so I might have missed something. Did
+   you try something like this before?
+
+   This came to mind when I was thinking about parsing the header for streams in
+   =streamly-lz4=, with the broader topic being, expressivity vs performance.
+
+* TODO Blogging: The source of truth                                  :emacs:
+
+* Read/Watch-List
+
+  This page containes is a list of interesting videos and papers that I plan to
+  (re-)visit.
+
+** Videos
+
+  - [X] [[https://www.youtube.com/watch?v=F_Riqjdh2oM][Quantum Computing for Computer Scientists]]
+
+** Papers
+
+  - [ ] [[https://arxiv.org/pdf/1611.09471.pdf][Learn Quantum Mechanics with Haskell]]
+  - [ ] [[https://eprint.iacr.org/2015/007.pdf][Balloon: A Forward-Secure Append-OnlyPersistent Authenticated Data Structure]]
 
 * Local variables
 
