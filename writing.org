@@ -136,7 +136,7 @@ Add theme:
    #+BEGIN_SRC haskell
      -- | Data type representing the fold
      data Fold a b =
-         Fold (s -> a -> s) s (s -> b)
+         forall s. Fold (s -> a -> s) s (s -> b)
 
      -- | The fold driver that runs the fold
      driver :: Fold a b -> [a] -> b

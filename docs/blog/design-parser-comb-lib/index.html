@@ -62,7 +62,7 @@
       "datePublished": "2021-01-30 00:00:00 \u002b0530 IST",
       "dateModified" : "2021-01-30 00:00:00 \u002b0530 IST",
       "url" : "https:\/\/adithyaov.github.io\/blog\/design-parser-comb-lib\/",
-      "wordCount" : "2555",
+      "wordCount" : "2557",
       "keywords" : ["Blog"]
     }
   
@@ -142,7 +142,7 @@ properties. Consider the type of a <code>foldl</code>.</p>
 </code></pre></div><p>We can represent this as a data type,</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#75715e">-- | Data type representing the fold</span>
 <span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Fold</span> a b <span style="color:#f92672">=</span>
-    <span style="color:#66d9ef">Fold</span> (s <span style="color:#f92672">-&gt;</span> a <span style="color:#f92672">-&gt;</span> s) s (s <span style="color:#f92672">-&gt;</span> b)
+    forall s<span style="color:#f92672">.</span> <span style="color:#66d9ef">Fold</span> (s <span style="color:#f92672">-&gt;</span> a <span style="color:#f92672">-&gt;</span> s) s (s <span style="color:#f92672">-&gt;</span> b)
 
 <span style="color:#75715e">-- | The fold driver that runs the fold</span>
 <span style="color:#a6e22e">driver</span> <span style="color:#f92672">::</span> <span style="color:#66d9ef">Fold</span> a b <span style="color:#f92672">-&gt;</span> [a] <span style="color:#f92672">-&gt;</span> b
