@@ -82,7 +82,7 @@ Add theme:
   :PROPERTIES:
   :EXPORT_FILE_NAME: design-parser-comb-lib
   :EXPORT_HUGO_SECTION: blog
-  :EXPORT_DATE: 2021-02-28
+  :EXPORT_DATE: 2021-01-30
   :END:
 
   #+BEGIN_EXPORT html
