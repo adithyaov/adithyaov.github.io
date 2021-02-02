@@ -90,6 +90,9 @@ Add theme:
     .language-haskell {
       color: #fff!important;
     }
+    .builtin {
+      color: #fff!important;
+    }
   </style>
   #+END_EXPORT
 
