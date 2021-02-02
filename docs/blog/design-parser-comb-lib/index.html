@@ -62,7 +62,7 @@
       "datePublished": "2021-01-30 00:00:00 \u002b0530 IST",
       "dateModified" : "2021-01-30 00:00:00 \u002b0530 IST",
       "url" : "https:\/\/adithyaov.github.io\/blog\/design-parser-comb-lib\/",
-      "wordCount" : "2507",
+      "wordCount" : "2515",
       "keywords" : ["Blog"]
     }
   
@@ -371,9 +371,9 @@ library of parsers would look like. The entire code togather is given below,</p>
 
 <span style="color:#66d9ef">module</span> Parser <span style="color:#66d9ef">where</span>
 
-<span style="color:#75715e">--------------------------------------------------------------------------------</span>
+<span style="color:#75715e">-- --------------------------------------------------------------------------</span>
 <span style="color:#75715e">-- Parser type</span>
-<span style="color:#75715e">--------------------------------------------------------------------------------</span>
+<span style="color:#75715e">-- --------------------------------------------------------------------------</span>
 
 <span style="color:#75715e">-- | This is the result of the @step@ function</span>
 <span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Step</span> s b <span style="color:#f92672">=</span> <span style="color:#66d9ef">Partial</span> <span style="color:#66d9ef">Int</span> s <span style="color:#f92672">|</span> <span style="color:#66d9ef">Done</span> <span style="color:#66d9ef">Int</span> b <span style="color:#f92672">|</span> <span style="color:#66d9ef">Error</span> <span style="color:#66d9ef">String</span>
@@ -388,9 +388,9 @@ library of parsers would look like. The entire code togather is given below,</p>
 <span style="color:#a6e22e">driver</span> <span style="color:#f92672">::</span> <span style="color:#66d9ef">Parser</span> a b <span style="color:#f92672">-&gt;</span> [a] <span style="color:#f92672">-&gt;</span> b
 <span style="color:#a6e22e">driver</span> <span style="color:#f92672">=</span> undefined
 
-<span style="color:#75715e">--------------------------------------------------------------------------------</span>
+<span style="color:#75715e">-- --------------------------------------------------------------------------</span>
 <span style="color:#75715e">-- Primitive combinators</span>
-<span style="color:#75715e">--------------------------------------------------------------------------------</span>
+<span style="color:#75715e">-- --------------------------------------------------------------------------</span>
 
 <span style="color:#75715e">-- | A non-terminating non-failing parser that just adds elements</span>
 <span style="color:#a6e22e">sum</span> <span style="color:#f92672">::</span> <span style="color:#66d9ef">Parser</span> <span style="color:#66d9ef">Int</span> <span style="color:#66d9ef">Int</span>
@@ -402,9 +402,9 @@ library of parsers would look like. The entire code togather is given below,</p>
     step s a <span style="color:#f92672">=</span> <span style="color:#66d9ef">Partial</span> <span style="color:#ae81ff">0</span> (s <span style="color:#f92672">+</span> a)
     extract s <span style="color:#f92672">=</span> <span style="color:#66d9ef">Right</span> s
 
-<span style="color:#75715e">--------------------------------------------------------------------------------</span>
+<span style="color:#75715e">-- --------------------------------------------------------------------------</span>
 <span style="color:#75715e">-- Modifying parsers</span>
-<span style="color:#75715e">--------------------------------------------------------------------------------</span>
+<span style="color:#75715e">-- --------------------------------------------------------------------------</span>
 
 <span style="color:#75715e">-- | A parser that takes while the predicate is true.</span>
 <span style="color:#75715e">-- Terminates: When predicate fails</span>
@@ -460,9 +460,9 @@ library of parsers would look like. The entire code togather is given below,</p>
                     <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">Error</span> <span style="color:#e6db74">&#34;takeGreaterThan: Took less than n elements&#34;</span>
                 <span style="color:#66d9ef">Error</span> err <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Error</span> err
 
-<span style="color:#75715e">--------------------------------------------------------------------------------</span>
+<span style="color:#75715e">-- --------------------------------------------------------------------------</span>
 <span style="color:#75715e">-- Combining parsers</span>
-<span style="color:#75715e">--------------------------------------------------------------------------------</span>
+<span style="color:#75715e">-- --------------------------------------------------------------------------</span>
 
 <span style="color:#66d9ef">data</span> <span style="color:#66d9ef">SplitWithState</span> sl sr bl <span style="color:#f92672">=</span> <span style="color:#66d9ef">SWLeft</span> sl <span style="color:#f92672">|</span> <span style="color:#66d9ef">SWRight</span> bl sr
 
