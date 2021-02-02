@@ -135,7 +135,8 @@ Add theme:
 
    #+BEGIN_SRC haskell
      -- | Data type representing the fold
-     data Fold a b = Fold (s -> a -> s) s (s -> b)
+     data Fold a b =
+         Fold (s -> a -> s) s (s -> b)
 
      -- | The fold driver that runs the fold
      driver :: Fold a b -> [a] -> b
@@ -161,13 +162,18 @@ Add theme:
 
    #+BEGIN_SRC haskell
      -- | This is the result of the @step@ function
-     data Step s b = Partial s | Done b
+     data Step s b
+         = Partial s
+         | Done b
 
      -- | This is the initial value
-     data Initial s b = IPartial s | IDone b
+     data Initial s b
+         = IPartial s
+         | IDone b
 
      -- | Data type representing the fold
-     data Fold2 a b = Fold2 (s -> a -> Step s b) (Initial s b) (s -> b)
+     data Fold2 a b =
+         forall s. Fold2 (s -> a -> Step s b) (Initial s b) (s -> b)
 
      -- | The fold driver that runs the fold
      driver :: Fold2 a b -> [a] -> b
@@ -187,16 +193,23 @@ Add theme:
 
    #+BEGIN_SRC haskell
      -- | This is the result of the @step@ function
-     data Step s b = Partial s | Done b | Error String
+     data Step s b
+         = Partial s
+         | Done b
+         | Error String
 
      -- | This is the initial value
-     data Initial s b = IPartial s | IDone b | IError String
+     data Initial s b
+         = IPartial s
+         | IDone b
+         | IError String
 
      -- | This is the result of @extract@
      type Extract b = Either String b
 
      -- | Data type representing the fold
-     data Fold3 a b = Fold3 (s -> a -> Step s b) (Initial s b) (s -> Extract b)
+     data Fold3 a b =
+         forall s. Fold3 (s -> a -> Step s b) (Initial s b) (s -> Extract b)
 
      -- | The fold driver that runs the fold
      driver :: Fold3 a b -> [a] -> b
@@ -215,13 +228,23 @@ Add theme:
 
    #+BEGIN_SRC haskell
      -- | This is the result of the @step@ function
-     data Step s b = Partial Int s | Done Int b | Error String
+     data Step s b
+         = Partial Int s
+         | Done Int b
+         | Error String
 
      -- | This is the initial value
-     data Initial s b = IPartial s | IDone b | Error String
+     data Initial s b
+         = IPartial s
+         | IDone b
+         | Error String
+
+     -- | This is the result of @extract@
+     type Extract b = Either String b
 
      -- | Data type representing the fold
-     data Fold4 a b = Fold4 (s -> a -> Step s b) (Initial s b) (s -> b)
+     data Fold4 a b =
+         forall s. Fold4 (s -> a -> Step s b) (Initial s b) (s -> Extract b)
 
      -- | The fold driver that runs the fold
      driver :: Fold4 a b -> [a] -> b
@@ -259,13 +282,23 @@ Add theme:
 
    #+BEGIN_SRC haskell
      -- | This is the result of the @step@ function
-     data Step s b = Partial Int s | Done Int b | Error String
+     data Step s b
+         = Partial Int s
+         | Done Int b
+         | Error String
 
      -- | This is the initial value
-     data Initial s b = IPartial s | IDone b | Error String
+     data Initial s b
+         = IPartial s
+         | IDone b
+         | Error String
+
+     -- | This is the result of @extract@
+     type Extract b = Either String b
 
      -- | Data type representing the parser
-     data Parser a b = Parser (s -> a -> Step s b) (Initial s b) (s -> b)
+     data Parser a b =
+         forall s. Parser (s -> a -> Step s b) (Initial s b) (s -> Extract b)
 
      -- | The parser driver that runs the parser
      driver :: Parser a b -> [a] -> b

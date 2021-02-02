@@ -62,7 +62,7 @@
       "datePublished": "2021-01-30 00:00:00 \u002b0530 IST",
       "dateModified" : "2021-01-30 00:00:00 \u002b0530 IST",
       "url" : "https:\/\/adithyaov.github.io\/blog\/design-parser-comb-lib\/",
-      "wordCount" : "2515",
+      "wordCount" : "2555",
       "keywords" : ["Blog"]
     }
   
@@ -141,7 +141,8 @@ properties. Consider the type of a <code>foldl</code>.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#a6e22e">foldl</span> <span style="color:#f92672">::</span> (s <span style="color:#f92672">-&gt;</span> a <span style="color:#f92672">-&gt;</span> s) <span style="color:#f92672">-&gt;</span> s <span style="color:#f92672">-&gt;</span> [a] <span style="color:#f92672">-&gt;</span> b
 </code></pre></div><p>We can represent this as a data type,</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#75715e">-- | Data type representing the fold</span>
-<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Fold</span> a b <span style="color:#f92672">=</span> <span style="color:#66d9ef">Fold</span> (s <span style="color:#f92672">-&gt;</span> a <span style="color:#f92672">-&gt;</span> s) s (s <span style="color:#f92672">-&gt;</span> b)
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Fold</span> a b <span style="color:#f92672">=</span>
+    <span style="color:#66d9ef">Fold</span> (s <span style="color:#f92672">-&gt;</span> a <span style="color:#f92672">-&gt;</span> s) s (s <span style="color:#f92672">-&gt;</span> b)
 
 <span style="color:#75715e">-- | The fold driver that runs the fold</span>
 <span style="color:#a6e22e">driver</span> <span style="color:#f92672">::</span> <span style="color:#66d9ef">Fold</span> a b <span style="color:#f92672">-&gt;</span> [a] <span style="color:#f92672">-&gt;</span> b
@@ -161,13 +162,18 @@ the <code>undefined</code> functions for better understanding.</p>
 amount to backtrack and whether the parse is a success or a failure.</p>
 <p>Extending for termination,</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#75715e">-- | This is the result of the @step@ function</span>
-<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Step</span> s b <span style="color:#f92672">=</span> <span style="color:#66d9ef">Partial</span> s <span style="color:#f92672">|</span> <span style="color:#66d9ef">Done</span> b
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Step</span> s b
+    <span style="color:#f92672">=</span> <span style="color:#66d9ef">Partial</span> s
+    <span style="color:#f92672">|</span> <span style="color:#66d9ef">Done</span> b
 
 <span style="color:#75715e">-- | This is the initial value</span>
-<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Initial</span> s b <span style="color:#f92672">=</span> <span style="color:#66d9ef">IPartial</span> s <span style="color:#f92672">|</span> <span style="color:#66d9ef">IDone</span> b
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Initial</span> s b
+    <span style="color:#f92672">=</span> <span style="color:#66d9ef">IPartial</span> s
+    <span style="color:#f92672">|</span> <span style="color:#66d9ef">IDone</span> b
 
 <span style="color:#75715e">-- | Data type representing the fold</span>
-<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Fold2</span> a b <span style="color:#f92672">=</span> <span style="color:#66d9ef">Fold2</span> (s <span style="color:#f92672">-&gt;</span> a <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Step</span> s b) (<span style="color:#66d9ef">Initial</span> s b) (s <span style="color:#f92672">-&gt;</span> b)
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Fold2</span> a b <span style="color:#f92672">=</span>
+    forall s<span style="color:#f92672">.</span> <span style="color:#66d9ef">Fold2</span> (s <span style="color:#f92672">-&gt;</span> a <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Step</span> s b) (<span style="color:#66d9ef">Initial</span> s b) (s <span style="color:#f92672">-&gt;</span> b)
 
 <span style="color:#75715e">-- | The fold driver that runs the fold</span>
 <span style="color:#a6e22e">driver</span> <span style="color:#f92672">::</span> <span style="color:#66d9ef">Fold2</span> a b <span style="color:#f92672">-&gt;</span> [a] <span style="color:#f92672">-&gt;</span> b
@@ -181,16 +187,23 @@ encounters <code>IDone</code> or <code>Done</code>. The implementation of the dr
 reader.</p>
 <p>Extending for error handeling,</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#75715e">-- | This is the result of the @step@ function</span>
-<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Step</span> s b <span style="color:#f92672">=</span> <span style="color:#66d9ef">Partial</span> s <span style="color:#f92672">|</span> <span style="color:#66d9ef">Done</span> b <span style="color:#f92672">|</span> <span style="color:#66d9ef">Error</span> <span style="color:#66d9ef">String</span>
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Step</span> s b
+    <span style="color:#f92672">=</span> <span style="color:#66d9ef">Partial</span> s
+    <span style="color:#f92672">|</span> <span style="color:#66d9ef">Done</span> b
+    <span style="color:#f92672">|</span> <span style="color:#66d9ef">Error</span> <span style="color:#66d9ef">String</span>
 
 <span style="color:#75715e">-- | This is the initial value</span>
-<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Initial</span> s b <span style="color:#f92672">=</span> <span style="color:#66d9ef">IPartial</span> s <span style="color:#f92672">|</span> <span style="color:#66d9ef">IDone</span> b <span style="color:#f92672">|</span> <span style="color:#66d9ef">IError</span> <span style="color:#66d9ef">String</span>
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Initial</span> s b
+    <span style="color:#f92672">=</span> <span style="color:#66d9ef">IPartial</span> s
+    <span style="color:#f92672">|</span> <span style="color:#66d9ef">IDone</span> b
+    <span style="color:#f92672">|</span> <span style="color:#66d9ef">IError</span> <span style="color:#66d9ef">String</span>
 
 <span style="color:#75715e">-- | This is the result of @extract@</span>
 <span style="color:#66d9ef">type</span> <span style="color:#66d9ef">Extract</span> b <span style="color:#f92672">=</span> <span style="color:#66d9ef">Either</span> <span style="color:#66d9ef">String</span> b
 
 <span style="color:#75715e">-- | Data type representing the fold</span>
-<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Fold3</span> a b <span style="color:#f92672">=</span> <span style="color:#66d9ef">Fold3</span> (s <span style="color:#f92672">-&gt;</span> a <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Step</span> s b) (<span style="color:#66d9ef">Initial</span> s b) (s <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Extract</span> b)
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Fold3</span> a b <span style="color:#f92672">=</span>
+    forall s<span style="color:#f92672">.</span> <span style="color:#66d9ef">Fold3</span> (s <span style="color:#f92672">-&gt;</span> a <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Step</span> s b) (<span style="color:#66d9ef">Initial</span> s b) (s <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Extract</span> b)
 
 <span style="color:#75715e">-- | The fold driver that runs the fold</span>
 <span style="color:#a6e22e">driver</span> <span style="color:#f92672">::</span> <span style="color:#66d9ef">Fold3</span> a b <span style="color:#f92672">-&gt;</span> [a] <span style="color:#f92672">-&gt;</span> b
@@ -203,13 +216,23 @@ stream ends. This state is conveniently represented by <code>Either</code> (alia
 <code>Extract</code>).</p>
 <p>Extending for backtracking,</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#75715e">-- | This is the result of the @step@ function</span>
-<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Step</span> s b <span style="color:#f92672">=</span> <span style="color:#66d9ef">Partial</span> <span style="color:#66d9ef">Int</span> s <span style="color:#f92672">|</span> <span style="color:#66d9ef">Done</span> <span style="color:#66d9ef">Int</span> b <span style="color:#f92672">|</span> <span style="color:#66d9ef">Error</span> <span style="color:#66d9ef">String</span>
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Step</span> s b
+    <span style="color:#f92672">=</span> <span style="color:#66d9ef">Partial</span> <span style="color:#66d9ef">Int</span> s
+    <span style="color:#f92672">|</span> <span style="color:#66d9ef">Done</span> <span style="color:#66d9ef">Int</span> b
+    <span style="color:#f92672">|</span> <span style="color:#66d9ef">Error</span> <span style="color:#66d9ef">String</span>
 
 <span style="color:#75715e">-- | This is the initial value</span>
-<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Initial</span> s b <span style="color:#f92672">=</span> <span style="color:#66d9ef">IPartial</span> s <span style="color:#f92672">|</span> <span style="color:#66d9ef">IDone</span> b <span style="color:#f92672">|</span> <span style="color:#66d9ef">Error</span> <span style="color:#66d9ef">String</span>
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Initial</span> s b
+    <span style="color:#f92672">=</span> <span style="color:#66d9ef">IPartial</span> s
+    <span style="color:#f92672">|</span> <span style="color:#66d9ef">IDone</span> b
+    <span style="color:#f92672">|</span> <span style="color:#66d9ef">Error</span> <span style="color:#66d9ef">String</span>
+
+<span style="color:#75715e">-- | This is the result of @extract@</span>
+<span style="color:#66d9ef">type</span> <span style="color:#66d9ef">Extract</span> b <span style="color:#f92672">=</span> <span style="color:#66d9ef">Either</span> <span style="color:#66d9ef">String</span> b
 
 <span style="color:#75715e">-- | Data type representing the fold</span>
-<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Fold4</span> a b <span style="color:#f92672">=</span> <span style="color:#66d9ef">Fold4</span> (s <span style="color:#f92672">-&gt;</span> a <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Step</span> s b) (<span style="color:#66d9ef">Initial</span> s b) (s <span style="color:#f92672">-&gt;</span> b)
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Fold4</span> a b <span style="color:#f92672">=</span>
+    forall s<span style="color:#f92672">.</span> <span style="color:#66d9ef">Fold4</span> (s <span style="color:#f92672">-&gt;</span> a <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Step</span> s b) (<span style="color:#66d9ef">Initial</span> s b) (s <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Extract</span> b)
 
 <span style="color:#75715e">-- | The fold driver that runs the fold</span>
 <span style="color:#a6e22e">driver</span> <span style="color:#f92672">::</span> <span style="color:#66d9ef">Fold4</span> a b <span style="color:#f92672">-&gt;</span> [a] <span style="color:#f92672">-&gt;</span> b
@@ -233,13 +256,23 @@ module named <code>Parser</code>.</p>
 </code></pre></div><p><code>Fold4</code> will act as the base type for our library. Let&rsquo;s rename it to
 <code>Parser</code> and add it.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#75715e">-- | This is the result of the @step@ function</span>
-<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Step</span> s b <span style="color:#f92672">=</span> <span style="color:#66d9ef">Partial</span> <span style="color:#66d9ef">Int</span> s <span style="color:#f92672">|</span> <span style="color:#66d9ef">Done</span> <span style="color:#66d9ef">Int</span> b <span style="color:#f92672">|</span> <span style="color:#66d9ef">Error</span> <span style="color:#66d9ef">String</span>
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Step</span> s b
+    <span style="color:#f92672">=</span> <span style="color:#66d9ef">Partial</span> <span style="color:#66d9ef">Int</span> s
+    <span style="color:#f92672">|</span> <span style="color:#66d9ef">Done</span> <span style="color:#66d9ef">Int</span> b
+    <span style="color:#f92672">|</span> <span style="color:#66d9ef">Error</span> <span style="color:#66d9ef">String</span>
 
 <span style="color:#75715e">-- | This is the initial value</span>
-<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Initial</span> s b <span style="color:#f92672">=</span> <span style="color:#66d9ef">IPartial</span> s <span style="color:#f92672">|</span> <span style="color:#66d9ef">IDone</span> b <span style="color:#f92672">|</span> <span style="color:#66d9ef">Error</span> <span style="color:#66d9ef">String</span>
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Initial</span> s b
+    <span style="color:#f92672">=</span> <span style="color:#66d9ef">IPartial</span> s
+    <span style="color:#f92672">|</span> <span style="color:#66d9ef">IDone</span> b
+    <span style="color:#f92672">|</span> <span style="color:#66d9ef">Error</span> <span style="color:#66d9ef">String</span>
+
+<span style="color:#75715e">-- | This is the result of @extract@</span>
+<span style="color:#66d9ef">type</span> <span style="color:#66d9ef">Extract</span> b <span style="color:#f92672">=</span> <span style="color:#66d9ef">Either</span> <span style="color:#66d9ef">String</span> b
 
 <span style="color:#75715e">-- | Data type representing the parser</span>
-<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Parser</span> a b <span style="color:#f92672">=</span> <span style="color:#66d9ef">Parser</span> (s <span style="color:#f92672">-&gt;</span> a <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Step</span> s b) (<span style="color:#66d9ef">Initial</span> s b) (s <span style="color:#f92672">-&gt;</span> b)
+<span style="color:#66d9ef">data</span> <span style="color:#66d9ef">Parser</span> a b <span style="color:#f92672">=</span>
+    forall s<span style="color:#f92672">.</span> <span style="color:#66d9ef">Parser</span> (s <span style="color:#f92672">-&gt;</span> a <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Step</span> s b) (<span style="color:#66d9ef">Initial</span> s b) (s <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">Extract</span> b)
 
 <span style="color:#75715e">-- | The parser driver that runs the parser</span>
 <span style="color:#a6e22e">driver</span> <span style="color:#f92672">::</span> <span style="color:#66d9ef">Parser</span> a b <span style="color:#f92672">-&gt;</span> [a] <span style="color:#f92672">-&gt;</span> b
