@@ -5,17 +5,6 @@
     <link>https://adithyaov.github.io/</link>
     <description>Recent content in Index on Adithya</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Thu, 28 Jan 2021 00:00:00 +0530</lastBuildDate><atom:link href="https://adithyaov.github.io/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Designing a parser</title>
-      <link>https://adithyaov.github.io/blog/direct-parser-design/</link>
-      <pubDate>Thu, 28 Jan 2021 00:00:00 +0530</pubDate>
-      
-      <guid>https://adithyaov.github.io/blog/direct-parser-design/</guid>
-      <description>.language-haskell { color: #fff!important; }  Introduction In this article lets design and code a simple parser combinator library. The design that we&amp;rsquo;ll come up with is a simplified version of direct style parsers in streamly.
-Overview We can all agree the universality of folds. They are very fundamental to functional programming. Parsers are nothing but glorified folds and just as fundamental. Having a good parsing library is essential for any functional ecosystem.</description>
-    </item>
-    
+    <language>en-us</language><atom:link href="https://adithyaov.github.io/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>

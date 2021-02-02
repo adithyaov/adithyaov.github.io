@@ -78,11 +78,11 @@ Add theme:
   :EXPORT_HUGO_MENU: :menu "main"
   :END:
 
-* Designing a parser                                               :streamly:
+* Designing a parser combinator library                            :streamly:
   :PROPERTIES:
-  :EXPORT_FILE_NAME: direct-parser-design
+  :EXPORT_FILE_NAME: design-parser-comb-lib
   :EXPORT_HUGO_SECTION: blog
-  :EXPORT_DATE: 2021-01-28
+  :EXPORT_DATE: 2021-02-28
   :END:
 
   #+BEGIN_EXPORT html
@@ -345,7 +345,6 @@ Add theme:
    =aplitWith=.
 
    #+BEGIN_SRC haskell
-
      data SplitWithState sl sr bl = SWLeft sl | SWRight bl sr
 
      -- | A parser that sequentially combines 2 parsers
@@ -406,7 +405,149 @@ Add theme:
    library of parsers would look like. The entire code togather is given below,
 
    #+BEGIN_SRC haskell
+     {-# LANGUAGE ExistentialQuantification #-}
 
+     module Parser where
+
+     --------------------------------------------------------------------------------
+     -- Parser type
+     --------------------------------------------------------------------------------
+
+     -- | This is the result of the @step@ function
+     data Step s b = Partial Int s | Done Int b | Error String
+
+     -- | This is the initial value
+     data Initial s b = IPartial s | IDone b | Error String
+
+     -- | Data type representing the parser
+     data Parser a b = Parser (s -> a -> Step s b) (Initial s b) (s -> b)
+
+     -- | The parser driver that runs the parser
+     driver :: Parser a b -> [a] -> b
+     driver = undefined
+
+     --------------------------------------------------------------------------------
+     -- Primitive combinators
+     --------------------------------------------------------------------------------
+
+     -- | A non-terminating non-failing parser that just adds elements
+     sum :: Parser Int Int
+     sum = Parser step initial extract
+
+         where
+
+         initial = IPartial 0
+         step s a = Partial 0 (s + a)
+         extract s = Right s
+
+     --------------------------------------------------------------------------------
+     -- Modifying parsers
+     --------------------------------------------------------------------------------
+
+     -- | A parser that takes while the predicate is true.
+     -- Terminates: When predicate fails
+     -- Fails: Never
+     takeWhile :: (a -> Bool) -> Parser a b -> Parser a b
+     takeWhile pred (Parser step initial extract) = Parser step1 initial1 extract1
+
+         where
+
+         initial1 = initial
+         extract1 = extract
+
+         step1 s a =
+             if pred a
+             then step s a
+             else case extract s of
+                      Left err -> Error err
+                      Right b -> Done 1 b
+
+     -- | A parser that takes exactly n elements.
+     -- Terminates: After taking n elements
+     -- Fails: When less than n elements are consumed
+     takeEqualTo :: Int -> Parser a b -> Parser a b
+     takeEqualTo n (Parser step initial extract) = Parser step1 initial1 extract1
+
+         where
+
+         initial1 =
+             case initial of
+                 IPartial s -> IPartial (0, s)
+                 IDone b ->
+                     if n == 0
+                     then IDone b
+                     else IError "takeGreaterThan: Took 0 elements"
+                 IError err -> IError err
+
+         extract1 (i, s) =
+             if i == n
+             then Right $ extract s
+             else Left "takeGreaterThan: Took less than n elements"
+
+         step1 (i, s) a =
+             let i1 = i + 1
+              in case step s a of
+                     -- k elements are unconsumed and will be backtracked. We need to
+                     -- update our state accordingly.
+                     Partial k s -> Partial k (i1 - k, s)
+                     Done k b ->
+                         -- Since k elements will be backtracked, "i1 - k" is the
+                         -- number of elements actually consumed.
+                         if i1 - k == n
+                         then Done k b
+                         else Error "takeGreaterThan: Took less than n elements"
+                     Error err -> Error err
+
+     --------------------------------------------------------------------------------
+     -- Combining parsers
+     --------------------------------------------------------------------------------
+
+     data SplitWithState sl sr bl = SWLeft sl | SWRight bl sr
+
+     -- | A parser that sequentially combines 2 parsers
+     splitWith :: (b -> c -> d) -> Parser a b -> Parser a c -> Parser a d
+     splitWith f (Parser stepL initialL extractL) (Parser stepR initialR extractR) =
+         Parser step initial extract
+
+         where
+
+         initial =
+             case initialL of
+                 IPartial sl -> IPartial $ SWLeft sl
+                 IDone bl ->
+                     case initialR of
+                         IPartial sr -> IPartial $ SWRight bl sr
+                         IDone sb -> IDone $ f sl sb
+                         IError err -> IError err
+                 IError err -> IError err
+
+         extract (SWLeft sl) =
+             case extractL sl of
+               Left err -> Left err
+               Right bl ->
+                   case initialR of
+                     IPartial sr ->
+                         case extractR sr of
+                           Left err -> Left err
+                           Right br -> Right $ f bl br
+                     IDone br -> Right $ f bl br
+                     IError err -> Left err
+
+         step1 (SWLeft sl) a =
+              case stepL sl a of
+                     Partial n sl1 -> Partial n $ SWLeft sl1
+                     Done n bl ->
+                       case initialR of
+                         IPartial sr -> Partial n $ SWRight bl sr
+                         IDone br -> Done n $ f bl br
+                         IError err -> Error err
+                     Error err -> Error err
+
+         step1 (SWRight bl sr) a =
+              case stepR sr a of
+                     Partial n sr1 -> Partial n $ SWRight bl sr1
+                     Done n br -> Done n $ f bl br
+                     Error err -> Error err
    #+END_SRC
 
 ** Where do you go from here?
