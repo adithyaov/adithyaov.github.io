@@ -13,8 +13,8 @@
       <pubDate>Sat, 30 Jan 2021 00:00:00 +0530</pubDate>
       
       <guid>https://adithyaov.github.io/blog/design-parser-comb-lib/</guid>
-      <description>.language-haskell { color: #fff!important; } .builtin { color: #fff!important; }  Introduction In this article lets design and code a simple parser combinator library. The design that we&amp;rsquo;ll come up with is a simplified version of direct style parsers in streamly.
-Overview We can all agree the universality of folds. They are very fundamental to functional programming. Parsers are nothing but glorified folds and just as fundamental. Having a good parsing library is essential for any functional ecosystem.</description>
+      <description>.language-haskell { color: #fff!important; } .builtin { color: #fff!important; } .string { color: #fff!important; }  Introduction In this article lets design and code a simple parser combinator library. The design that we&amp;rsquo;ll come up with is a simplified version of direct style parsers in streamly.
+Overview We can all agree the universality of folds. They are very fundamental to functional programming. Parsers are nothing but glorified folds and just as fundamental.</description>
     </item>
     
   </channel>

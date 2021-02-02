@@ -93,6 +93,9 @@ Add theme:
     .builtin {
       color: #fff!important;
     }
+    .string {
+      color: #fff!important;
+    }
   </style>
   #+END_EXPORT
 
