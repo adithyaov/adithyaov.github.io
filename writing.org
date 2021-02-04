@@ -78,7 +78,7 @@ Add theme:
   :EXPORT_HUGO_MENU: :menu "main"
   :END:
 
-* Designing a parser combinator library                            :streamly:
+* TODO Designing a parser combinator library                       :streamly:
   :PROPERTIES:
   :EXPORT_FILE_NAME: design-parser-comb-lib
   :EXPORT_HUGO_SECTION: blog
