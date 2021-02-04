@@ -381,7 +381,7 @@ Add theme:
    #+END_SRC
 
    And finally, the most important parser combinator combining multiple parsers,
-   =aplitWith=.
+   =splitWith=.
 
    #+BEGIN_SRC haskell
      data SplitWithState sl sr bl = SWLeft sl | SWRight bl sr
@@ -890,19 +890,28 @@ State6 --> State8 : Failure
 
 * TODO Blogging: The source of truth                                  :emacs:
 
+* Awesome git
+
+  - [ ] https://github.com/hercules-team/augeas
+  - [ ] https://github.com/composewell/streamly (biased)
+
 * Read/Watch-List
 
   This page containes is a list of interesting videos and papers that I plan to
   (re-)visit.
 
-** Videos
-
   - [X] [[https://www.youtube.com/watch?v=F_Riqjdh2oM][Quantum Computing for Computer Scientists]]
-
-** Papers
-
+  - [X] [[https://wiki.haskell.org/Evaluation_order_and_state_tokens][Evaluation order and state tokens]]
   - [ ] [[https://arxiv.org/pdf/1611.09471.pdf][Learn Quantum Mechanics with Haskell]]
   - [ ] [[https://eprint.iacr.org/2015/007.pdf][Balloon: A Forward-Secure Append-OnlyPersistent Authenticated Data Structure]]
+  - [ ] [[http://www.ats-lang.org/MYDATA/Xanadu-lics00.pdf][Imperative Programming with Dependent Types]]
+
+* Gotchas
+
+  - =case= is lazy by default in Haskell
+    - The use of constructor makes =case= strict. We have to evaluate the
+      scrutenee to match
+  - bang in =let= is not a bang pattern
 
 * Local variables
 
