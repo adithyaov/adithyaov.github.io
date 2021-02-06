@@ -78,6 +78,198 @@ Add theme:
   :EXPORT_HUGO_MENU: :menu "main"
   :END:
 
+* TODO From fold to parsers                                        :streamly:
+  :PROPERTIES:
+  :EXPORT_FILE_NAME: folds-to-parsers
+  :EXPORT_HUGO_SECTION: blog
+  :EXPORT_DATE: 2021-01-30
+  :END:
+
+  #+BEGIN_EXPORT html
+  <style>
+    .language-haskell {
+      color: #fff!important;
+    }
+    .builtin {
+      color: #fff!important;
+    }
+    .string {
+      color: #fff!important;
+    }
+  </style>
+  #+END_EXPORT
+
+** Introduction
+
+   Folds are fundamental building blocks of functional programming. Every main
+   function can more-or-less be represented by a fold.
+
+   In this article we'll see how parsers are a simple extension to folds. We'll
+   start with =foldl= and evolve it into a parser.
+
+** Design
+
+   Consider the type of a =foldl=,
+
+   #+BEGIN_SRC haskell
+     foldl :: (s -> a -> s) -> s -> [a] -> b
+   #+END_SRC
+
+   We can represent this as a data type,
+
+   #+BEGIN_SRC haskell
+     -- | Data type representing the fold
+     data Fold a b =
+         forall s. Fold (s -> a -> s) s (s -> b)
+
+     -- | The fold driver that runs the fold
+     driver :: Fold a b -> [a] -> b
+     driver (Fold step initial extract) stream = go initial stream
+
+         where
+
+         go s [] = extract s
+         go s (a:xs) = go (step s a) xs
+   #+END_SRC
+
+   For the ease of representation and combination we keep the state of the fold
+   internal. Instead, we add a function =(s -> b)= to extract this internal
+   state.
+
+   Additional to the process of folding, the parser has these properties,
+   - termination
+   - backtracking
+   - error handeling
+
+   From the parser type, the parser driver should know whether to terminate, the
+   amount to backtrack and whether the parse is a success or a failure.
+
+   Extending for termination,
+
+   #+BEGIN_SRC haskell
+     -- | This is the result of the @step@ function
+     data Step s b
+         = Partial s
+         | Done b
+
+     -- | This is the initial value
+     data Initial s b
+         = IPartial s
+         | IDone b
+
+     -- | Data type representing the fold
+     data Fold2 a b =
+         forall s. Fold2 (s -> a -> Step s b) (Initial s b) (s -> b)
+
+     -- | The fold driver that runs the fold
+     driver :: Fold2 a b -> [a] -> b
+     driver = error "Try implementing this yourself"
+   #+END_SRC
+
+   =Fold2= represents terminating folds. The driver can terminate when it
+   encounters =IDone= or =Done=. The implementation of the driver is left to the
+   reader.
+
+   The reason we have different types for representing the result of step &
+   initial is beause I preemptively know that these types are going to
+   diverge. If you just want to create terminating folds you can use the same
+   data type.
+
+   Extending for error handeling,
+
+   #+BEGIN_SRC haskell
+     -- | This is the result of the @step@ function
+     data Step s b
+         = Partial s
+         | Done b
+         | Error String
+
+     -- | This is the initial value
+     data Initial s b
+         = IPartial s
+         | IDone b
+         | IError String
+
+     -- | This is the result of @extract@
+     type Extract b = Either String b
+
+     -- | Data type representing the fold
+     data Fold3 a b =
+         forall s. Fold3 (s -> a -> Step s b) (Initial s b) (s -> Extract b)
+
+     -- | The fold driver that runs the fold
+     driver :: Fold3 a b -> [a] -> b
+     driver = error "Try implementing this yourself"
+   #+END_SRC
+
+   The result types =Step= and =Initial= now can represent =Error= for the
+   driver to act accordingly.
+
+   On extraction the driver needs to know the state of the parser. This is
+   particularly useful to denote the success or a failed state when the input
+   stream ends. This state is conveniently represented by =Either= (aliased to
+   =Extract=).
+
+   Extending for backtracking,
+
+   #+BEGIN_SRC haskell
+     -- | This is the result of the @step@ function
+     data Step s b
+         = Partial Int s
+         | Done Int b
+         | Error String
+
+     -- | This is the initial value
+     data Initial s b
+         = IPartial s
+         | IDone b
+         | Error String
+
+     -- | This is the result of @extract@
+     type Extract b = Either String b
+
+     -- | Data type representing the fold
+     data Fold4 a b =
+         forall s. Fold4 (s -> a -> Step s b) (Initial s b) (s -> Extract b)
+
+     -- | The fold driver that runs the fold
+     driver :: Fold4 a b -> [a] -> b
+     driver = error "Try implementing this yourself"
+   #+END_SRC
+
+   This is a little tricky. We can represent backtracking in multiple ways.
+
+   We can leave the logic of backtracking to the driver and communicate the
+   amount to backtrack via the constructors.  Or, the types themselves can be
+   designed to return the unused list of elements to the driver.
+
+   We'll discuss the pros and cons of each method in another article. For now,
+   we'll just let the driver handle backtracking.
+
+   =Fold4= is essentially a parser or atleast the representation of a parser. It
+   is a blueprint that conveys the logic of parsing to driver.
+
+   The entire parsing workflow would consist of the representation of the parser
+   (=Fold4=) and the driver, reducing a stream of elements resulting in a parsed
+   value.
+
+** Where do you go from here
+
+   Here are a few tasks you can do to understand the semantics of our design,
+   1. Implement the =driver :: Fold4 a b -> [a] -> b=.
+   2. Write a =sum :: Fold4 Int Int= parser.
+   3. Write a =takeWhile :: (a -> Bool) -> Fold4 a b -> Fold4 a b= combinator.
+
+   For the above task, make assumptions if the behaviour is not obvious. Try to
+   choose the most natural behaviour. It's not an easy task so take your time
+   and reason with the code.
+
+   In a later article we'll make a bare-bones parsing library using this
+   representation for parsers. That article will make things much clear and will
+   act like a cheat sheet for implementation details.
+
+* TODO A bare-bones parser library                                 :streamly:
+
 * TODO Designing a parser combinator library                       :streamly:
   :PROPERTIES:
   :EXPORT_FILE_NAME: design-parser-comb-lib
