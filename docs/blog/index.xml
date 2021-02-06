@@ -5,6 +5,19 @@
     <link>https://adithyaov.github.io/blog/</link>
     <description>Recent content in Writing on Adithya</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="https://adithyaov.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language>
+    <lastBuildDate>Sat, 30 Jan 2021 00:00:00 +0530</lastBuildDate><atom:link href="https://adithyaov.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>From fold to parsers</title>
+      <link>https://adithyaov.github.io/blog/folds-to-parsers/</link>
+      <pubDate>Sat, 30 Jan 2021 00:00:00 +0530</pubDate>
+      
+      <guid>https://adithyaov.github.io/blog/folds-to-parsers/</guid>
+      <description>.language-haskell { color: #fff!important; } .builtin { color: #fff!important; } .string { color: #fff!important; }  Introduction Folds are fundamental building blocks of functional programming. Every main function can more-or-less be represented by a fold.
+In this article we&amp;rsquo;ll see how parsers are a simple extension to folds. We&amp;rsquo;ll start with foldl and evolve it into a parser.
+Design Consider the type of a foldl,
+foldl :: (s -&amp;gt; a -&amp;gt; s) -&amp;gt; s -&amp;gt; [a] -&amp;gt; b We can represent this as a data type,</description>
+    </item>
+    
   </channel>
 </rss>

@@ -78,7 +78,7 @@ Add theme:
   :EXPORT_HUGO_MENU: :menu "main"
   :END:
 
-* TODO From fold to parsers                                        :streamly:
+* DONE From fold to parsers                                        :streamly:
   :PROPERTIES:
   :EXPORT_FILE_NAME: folds-to-parsers
   :EXPORT_HUGO_SECTION: blog

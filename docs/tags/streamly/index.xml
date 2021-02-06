@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Index on Adithya</title>
-    <link>https://adithyaov.github.io/</link>
-    <description>Recent content in Index on Adithya</description>
+    <title>streamly on Adithya</title>
+    <link>https://adithyaov.github.io/tags/streamly/</link>
+    <description>Recent content in streamly on Adithya</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 30 Jan 2021 00:00:00 +0530</lastBuildDate><atom:link href="https://adithyaov.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 30 Jan 2021 00:00:00 +0530</lastBuildDate><atom:link href="https://adithyaov.github.io/tags/streamly/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>From fold to parsers</title>
       <link>https://adithyaov.github.io/blog/folds-to-parsers/</link>
