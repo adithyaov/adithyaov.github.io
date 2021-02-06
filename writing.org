@@ -78,7 +78,7 @@ Add theme:
   :EXPORT_HUGO_MENU: :menu "main"
   :END:
 
-* DONE From fold to parsers                                        :streamly:
+* DONE From folds to parsers                                       :streamly:
   :PROPERTIES:
   :EXPORT_FILE_NAME: folds-to-parsers
   :EXPORT_HUGO_SECTION: blog
@@ -246,8 +246,8 @@ Add theme:
    We'll discuss the pros and cons of each method in another article. For now,
    we'll just let the driver handle backtracking.
 
-   =Fold4= is essentially a parser or atleast the representation of a parser. It
-   is a blueprint that conveys the logic of parsing to driver.
+   =Fold4= is essentially a parser or atleast the recipe of a parser. It is a
+   blueprint that conveys the logic of parsing to driver.
 
    The entire parsing workflow would consist of the representation of the parser
    (=Fold4=) and the driver, reducing a stream of elements resulting in a parsed
@@ -255,12 +255,12 @@ Add theme:
 
 ** Where do you go from here
 
-   Here are a few tasks you can do to understand the semantics of our design,
+   Here are a few things you can do to understand the semantics of our design,
    1. Implement the =driver :: Fold4 a b -> [a] -> b=.
    2. Write a =sum :: Fold4 Int Int= parser.
    3. Write a =takeWhile :: (a -> Bool) -> Fold4 a b -> Fold4 a b= combinator.
 
-   For the above task, make assumptions if the behaviour is not obvious. Try to
+   For the above tasks, make assumptions if the behaviour is not obvious. Try to
    choose the most natural behaviour. It's not an easy task so take your time
    and reason with the code.
 

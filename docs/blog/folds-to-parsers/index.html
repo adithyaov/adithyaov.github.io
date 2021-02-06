@@ -2,7 +2,7 @@
 <html lang="en-us">
 
 <head>
-  <title>From fold to parsers | Adithya</title>
+  <title>From folds to parsers | Adithya</title>
 
   <meta charset="UTF-8">
   <meta name="language" content="en">
@@ -49,8 +49,8 @@
             "@id": "https:\/\/adithyaov.github.io"
       },
       "articleSection" : "blog",
-      "name" : "From fold to parsers",
-      "headline" : "From fold to parsers",
+      "name" : "From folds to parsers",
+      "headline" : "From folds to parsers",
       "description" : "",
       "inLanguage" : "en-US",
       "author" : "",
@@ -103,7 +103,7 @@
       <div class="post__container">
         <div class="post">
           <header class="post__header">
-            <h1 id="post__title">From fold to parsers</h1>
+            <h1 id="post__title">From folds to parsers</h1>
             <time datetime="2021-01-30 00:00:00 &#43;0530 IST" class="post__date">Jan 30 2021</time> 
           </header>
           <article class="post__content">
@@ -234,19 +234,19 @@ amount to backtrack via the constructors.  Or, the types themselves can be
 designed to return the unused list of elements to the driver.</p>
 <p>We&rsquo;ll discuss the pros and cons of each method in another article. For now,
 we&rsquo;ll just let the driver handle backtracking.</p>
-<p><code>Fold4</code> is essentially a parser or atleast the representation of a parser. It
-is a blueprint that conveys the logic of parsing to driver.</p>
+<p><code>Fold4</code> is essentially a parser or atleast the recipe of a parser. It is a
+blueprint that conveys the logic of parsing to driver.</p>
 <p>The entire parsing workflow would consist of the representation of the parser
 (<code>Fold4</code>) and the driver, reducing a stream of elements resulting in a parsed
 value.</p>
 <h2 id="where-do-you-go-from-here">Where do you go from here<a class="anchor" href="#where-do-you-go-from-here">#</a></h2>
-<p>Here are a few tasks you can do to understand the semantics of our design,</p>
+<p>Here are a few things you can do to understand the semantics of our design,</p>
 <ol>
 <li>Implement the <code>driver :: Fold4 a b -&gt; [a] -&gt; b</code>.</li>
 <li>Write a <code>sum :: Fold4 Int Int</code> parser.</li>
 <li>Write a <code>takeWhile :: (a -&gt; Bool) -&gt; Fold4 a b -&gt; Fold4 a b</code> combinator.</li>
 </ol>
-<p>For the above task, make assumptions if the behaviour is not obvious. Try to
+<p>For the above tasks, make assumptions if the behaviour is not obvious. Try to
 choose the most natural behaviour. It&rsquo;s not an easy task so take your time
 and reason with the code.</p>
 <p>In a later article we&rsquo;ll make a bare-bones parsing library using this
